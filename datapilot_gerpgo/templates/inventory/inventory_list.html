@@ -1,0 +1,436 @@
+{% extends 'base/base.html' %}
+
+{% block title %}库存管理 - DataPilot Gerpgo 集成平台{% endblock %}
+
+{% block content_title %}FBA库存列表{% endblock %}
+
+{% block content %}
+<!-- 修改前的同步库存按钮 -->
+<div class="mb-4">
+    <div class="row">
+        <div class="col-md-6">
+            <button id="sync-inventory-btn" class="btn btn-primary">
+                <i class="fa fa-refresh mr-1"></i>从Gerpgo同步库存
+            </button>
+        </div>
+        <div class="col-md-6 text-right">
+            <div class="input-group" style="width: 300px; margin-left: auto;">
+                <input type="text" id="search-input" class="form-control" placeholder="搜索产品名称或SKU">
+                <button id="search-btn" class="btn btn-secondary">
+                    <i class="fa fa-search"></i>
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- 修改为带日期选择的同步区域 -->
+<div class="mb-4">
+    <div class="row">
+        <div class="col-md-8">
+            <div class="input-group" style="width: 100%;">
+                <div class="input-group-prepend">
+                    <span class="input-group-text">开始日期</span>
+                </div>
+                <input type="date" id="begin-date" class="form-control">
+                <div class="input-group-append">
+                    <span class="input-group-text">至</span>
+                </div>
+                <input type="date" id="end-date" class="form-control">
+            </div>
+    </div>
+</div>
+
+<div class="table-responsive">
+    <table class="table table-bordered" id="inventory-table">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>产品名称</th>
+                <th>SKU</th>
+                <th>FNSKU</th>
+                <th>可用数量</th>
+                <th>仓库</th>
+                <th>销售价格</th>
+                <th>库存快照日期</th>
+                <th>近30天销量</th>
+                <th>操作</th>
+            </tr>
+        </thead>
+        <tbody id="inventory-table-body">
+            <tr>
+                <td colspan="10" class="text-center">加载中...</td>
+            </tr>
+        </tbody>
+    </table>
+</div>
+
+<!-- 分页控制 -->
+<div class="d-flex justify-content-between mt-4" id="pagination-controls">
+    <div class="text-muted">
+        显示 <span id="showing-range">0-0</span> 共 <span id="total-count">0</span> 个库存记录
+    </div>
+    <div>
+        <nav aria-label="Page navigation">
+            <ul class="pagination" id="pagination">
+                <!-- 分页按钮将由JavaScript动态生成 -->
+            </ul>
+        </nav>
+    </div>
+</div>
+
+<!-- 同步库存的模态框 -->
+<div class="modal fade" id="sync-modal" tabindex="-1" role="dialog" aria-labelledby="sync-modal-label" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="sync-modal-label">同步库存数据</h5>
+                <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <p>正在从Gerpgo同步库存数据，请稍候...</p>
+                <div class="progress">
+                    <div class="progress-bar progress-bar-striped progress-bar-animated" role="progressbar" style="width: 0%" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100"></div>
+                </div>
+                <div class="mt-3 text-center" id="sync-status-text">准备同步...</div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" id="close-sync-modal" disabled data-bs-dismiss="modal">关闭</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- 库存详情模态框 -->
+<div class="modal fade" id="inventory-detail-modal" tabindex="-1" role="dialog" aria-labelledby="inventory-detail-modal-label" aria-hidden="true">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="inventory-detail-modal-label">库存详情</h5>
+                <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body" id="inventory-detail-content">
+                <!-- 库存详情内容将由JavaScript动态填充 -->
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">关闭</button>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    // 当前页码
+    let currentPage = 1;
+    // 每页显示数量
+    const pageSize = 10;
+    // 搜索关键词
+    let searchKeyword = '';
+    
+    // 加载库存列表
+    function loadInventory(page = 1, keyword = '') {
+        const tbody = $('#inventory-table-body');
+        tbody.html('<tr><td colspan="10" class="text-center">加载中...</td></tr>');
+        
+        let url = `/api/v1/frontend/inventory/?page=${page}&pageSize=${pageSize}`;
+        if (keyword) {
+            url += `&search=${keyword}`;
+        }
+        
+        $.get(url, function(data) {
+            tbody.empty();
+            
+            if (data.success && data.data.inventory && data.data.inventory.length > 0) {
+                data.data.inventory.forEach(function(item) {
+                    tbody.append(`
+                        <tr>
+                            <td>${item.id}</td>
+                            <td>${item.product_name}</td>
+                            <td>${item.sku}</td>
+                            <td>${item.fnsku || '-'}</td>
+                            <td>${item.available_quantity}</td>
+                            <td>${item.warehouse_name}</td>
+                            <td>${item.currency || 'USD'} ${item.sales_price ? item.sales_price.toFixed(2) : '0.00'}</td>
+                            <td>${item.snapshot_date}</td>
+                            <td>${item.units_shipped_last_30_days}</td>
+                            <td>
+                                <button class="btn btn-info btn-sm view-inventory" data-id="${item.id}">
+                                    <i class="fa fa-eye"></i> 查看
+                                </button>
+                            </td>
+                        </tr>
+                    `);
+                });
+            } else {
+                tbody.append('<tr><td colspan="10" class="text-center">暂无数据</td></tr>');
+            }
+            
+            // 更新分页信息
+            updatePagination(data.data.total, page, keyword);
+        }).fail(function() {
+            tbody.html('<tr><td colspan="10" class="text-center text-danger">加载失败，请重试</td></tr>');
+        });
+    }
+    
+    // 更新分页控件
+    function updatePagination(totalCount, currentPage, keyword) {
+        const totalPages = Math.ceil(totalCount / pageSize);
+        const pagination = $('#pagination');
+        
+        // 更新显示范围
+        const start = (currentPage - 1) * pageSize + 1;
+        const end = Math.min(currentPage * pageSize, totalCount);
+        $('#showing-range').text(`${start}-${end}`);
+        $('#total-count').text(totalCount);
+        
+        // 清空现有分页按钮
+        pagination.empty();
+        
+        // 添加上一页按钮
+        const prevClass = currentPage === 1 ? 'disabled' : '';
+        pagination.append(`
+            <li class="page-item ${prevClass}">
+                <a class="page-link" href="#" data-page="${currentPage - 1}" data-keyword="${keyword}">上一页</a>
+            </li>
+        `);
+        
+        // 添加页码按钮
+        const maxVisiblePages = 5;
+        let startPage = Math.max(1, currentPage - Math.floor(maxVisiblePages / 2));
+        let endPage = Math.min(totalPages, startPage + maxVisiblePages - 1);
+        
+        if (endPage - startPage + 1 < maxVisiblePages) {
+            startPage = Math.max(1, endPage - maxVisiblePages + 1);
+        }
+        
+        for (let i = startPage; i <= endPage; i++) {
+            const activeClass = i === currentPage ? 'active' : '';
+            pagination.append(`
+                <li class="page-item ${activeClass}">
+                    <a class="page-link" href="#" data-page="${i}" data-keyword="${keyword}">${i}</a>
+                </li>
+            `);
+        }
+        
+        // 添加下一页按钮
+        const nextClass = currentPage === totalPages ? 'disabled' : '';
+        pagination.append(`
+            <li class="page-item ${nextClass}">
+                <a class="page-link" href="#" data-page="${currentPage + 1}" data-keyword="${keyword}">下一页</a>
+            </li>
+        `);
+    }
+    
+    // 同步库存数据
+    // 删除原始的syncInventory函数，只保留修改后的版本（包含日期参数功能）
+    
+    // 修改后的同步函数
+    function syncInventory() {
+        const modal = new bootstrap.Modal($('#sync-modal'));
+        const progressBar = $('.progress-bar');
+        const statusText = $('#sync-status-text');
+        
+        // 重置进度条和状态文本
+        progressBar.css('width', '0%');
+        progressBar.removeClass('bg-danger').addClass('bg-primary');
+        statusText.text('准备同步...');
+        $('#close-sync-modal').prop('disabled', true);
+        
+        // 获取日期参数
+        const beginDate = $('#begin-date').val();
+        const endDate = $('#end-date').val();
+        
+        // 构建请求数据
+        const requestData = {};
+        if (beginDate) {
+            requestData.start_date = beginDate + 'T00:00:00';
+        }
+        if (endDate) {
+            requestData.end_date = endDate + 'T23:59:59';
+        }
+        
+        // 显示模态框
+        modal.show();
+        
+        // 发送同步请求 - 注意这里修复了语法错误，添加了逗号
+        $.ajax({
+            url: '/api/v1/sync/inventory/',
+            type: 'POST',
+            data: JSON.stringify(requestData),
+            contentType: 'application/json',
+            success: function(data) {
+                // 轮询同步状态
+                const checkSyncStatus = setInterval(function() {
+                    $.get('/api/v1/sync/logs/?sync_type=inventory&ordering=-created_at&limit=1', function(logData) {
+                        if (logData.results && logData.results.length > 0) {
+                            const latestLog = logData.results[0];
+                            
+                            // 更新进度
+                            if (latestLog.status === 'success') {
+                                progressBar.css('width', '100%');
+                                statusText.text('同步完成！');
+                                clearInterval(checkSyncStatus);
+                                
+                                // 启用关闭按钮
+                                $('#close-sync-modal').prop('disabled', false);
+                                
+                                // 重新加载库存列表
+                                loadInventory(currentPage, searchKeyword);
+                            } else if (latestLog.status === 'failed') {
+                                progressBar.css('width', '100%');
+                                progressBar.removeClass('bg-primary').addClass('bg-danger');
+                                statusText.text('同步失败！请重试');
+                                clearInterval(checkSyncStatus);
+                                
+                                // 启用关闭按钮
+                                $('#close-sync-modal').prop('disabled', false);
+                            } else {
+                                // 假设正在进行中，更新进度
+                                const progress = Math.min(95, Math.floor(Math.random() * 90) + 10);
+                                progressBar.css('width', `${progress}%`);
+                                statusText.text(`正在同步... ${progress}%`);
+                            }
+                        }
+                    }).fail(function() {
+                        clearInterval(checkSyncStatus);
+                        statusText.text('检查同步状态失败');
+                        $('#close-sync-modal').prop('disabled', false);
+                    });
+                }, 2000);
+            },
+            // 添加了逗号分隔
+            error: function() {
+                progressBar.css('width', '100%');
+                progressBar.removeClass('bg-primary').addClass('bg-danger');
+                statusText.text('同步请求失败！请重试');
+                $('#close-sync-modal').prop('disabled', false);
+            }
+        });
+    }
+    
+    // 查看库存详情
+    function viewInventoryDetail(inventoryId) {
+        const modal = new bootstrap.Modal($('#inventory-detail-modal'));
+        const detailContent = $('#inventory-detail-content');
+        
+        detailContent.html('<div class="text-center py-4">加载中...</div>');
+        modal.show();
+        
+        // 这里应该调用获取库存详情的API，现在简化处理
+        $.get(`/api/v1/frontend/inventory/?id=${inventoryId}`, function(data) {
+            if (data.success && data.data.inventory && data.data.inventory.length > 0) {
+                const item = data.data.inventory[0];
+                let detailHtml = `
+                    <div class="row">
+                        <div class="col-md-4">
+                            <div class="mb-3">
+                                <h5>基本信息</h5>
+                                <p><strong>产品名称:</strong> ${item.product_name}</p>
+                                <p><strong>SKU:</strong> ${item.sku}</p>
+                                <p><strong>FNSKU:</strong> ${item.fnsku || '-'}</p>
+                                <p><strong>ASIN:</strong> ${item.asin || '-'}</p>
+                                <p><strong>产品状态:</strong> ${item.condition || '-'}</p>
+                            </div>
+                            <div class="mb-3">
+                                <h5>库存信息</h5>
+                                <p><strong>可用数量:</strong> ${item.available_quantity}</p>
+                                <p><strong>健康库存水平:</strong> ${item.healthy_inventory_level || '-'}</p>
+                                <p><strong>仓库:</strong> ${item.warehouse_name}</p>
+                                <p><strong>存储类型:</strong> ${item.storage_type || '-'}</p>
+                                <p><strong>商品体积:</strong> ${item.item_volume || '-'} cubic feet</p>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="mb-3">
+                                <h5>销售数据</h5>
+                                <p><strong>销售价格:</strong> ${item.currency || 'USD'} ${item.sales_price ? item.sales_price.toFixed(2) : '0.00'}</p>
+                                <p><strong>周转率:</strong> ${item.sell_through || '-'}</p>
+                                <p><strong>近7天发货量:</strong> ${item.units_shipped_last_7_days}</p>
+                                <p><strong>近30天发货量:</strong> ${item.units_shipped_last_30_days}</p>
+                                <p><strong>近60天发货量:</strong> ${item.units_shipped_last_60_days}</p>
+                                <p><strong>近90天发货量:</strong> ${item.units_shipped_last_90_days}</p>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="mb-3">
+                                <h5>库存年龄分布</h5>
+                                <p><strong>0-30天:</strong> ${item.inv_age_0_to_30_days}</p>
+                                <p><strong>31-60天:</strong> ${item.inv_age_31_to_60_days}</p>
+                                <p><strong>61-90天:</strong> ${item.inv_age_61_to_90_days}</p>
+                                <p><strong>91-180天:</strong> ${item.inv_age_91_to_180_days}</p>
+                                <p><strong>181-270天:</strong> ${item.inv_age_181_to_270_days}</p>
+                                <p><strong>271-365天:</strong> ${item.inv_age_271_to_365_days}</p>
+                                <p><strong>365天以上:</strong> ${item.inv_age_365_plus_days}</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="mt-4">
+                        <h5>预测数据</h5>
+                        <p><strong>6个月长期仓储费预测:</strong> ${item.currency || 'USD'} ${item.projected_ltsf_6_mo ? item.projected_ltsf_6_mo.toFixed(2) : '0.00'}</p>
+                        <p><strong>12个月长期仓储费预测:</strong> ${item.currency || 'USD'} ${item.projected_ltsf_12_mo ? item.projected_ltsf_12_mo.toFixed(2) : '0.00'}</p>
+                        <p><strong>快照日期:</strong> ${item.snapshot_date}</p>
+                        <p><strong>更新日期:</strong> ${item.update_date}</p>
+                        ${item.alert ? `<p class="text-warning"><strong>预警:</strong> ${item.alert}</p>` : ''}
+                    </div>
+                `;
+                
+                detailContent.html(detailHtml);
+            } else {
+                detailContent.html('<div class="text-center text-danger py-4">无法加载库存详情</div>');
+            }
+        }).fail(function() {
+            detailContent.html('<div class="text-center text-danger py-4">加载失败，请重试</div>');
+        });
+    }
+    
+    // 初始化页面
+    $(document).ready(function() {
+        // 加载库存列表
+        loadInventory();
+        
+        // 搜索按钮点击事件
+        $('#search-btn').click(function() {
+            searchKeyword = $('#search-input').val().trim();
+            loadInventory(1, searchKeyword);
+        });
+        
+        // 回车键搜索
+        $('#search-input').keypress(function(e) {
+            if (e.which === 13) {
+                searchKeyword = $(this).val().trim();
+                loadInventory(1, searchKeyword);
+            }
+        });
+        
+        // 分页按钮点击事件
+        $(document).on('click', '#pagination a', function(e) {
+            e.preventDefault();
+            const page = parseInt($(this).data('page'));
+            const keyword = $(this).data('keyword');
+            
+            if (!isNaN(page) && page > 0) {
+                currentPage = page;
+                searchKeyword = keyword;
+                loadInventory(currentPage, searchKeyword);
+            }
+        });
+        
+        // 同步库存按钮点击事件
+        $('#sync-inventory-btn').click(function() {
+            syncInventory();
+        });
+        
+        // 查看库存详情按钮点击事件
+        $(document).on('click', '.view-inventory', function() {
+            const inventoryId = $(this).data('id');
+            viewInventoryDetail(inventoryId);
+        });
+    });
+</script>
+{% endblock %}

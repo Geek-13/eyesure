@@ -1,0 +1,2253 @@
+{% extends 'base/base.html' %}
+
+{% block title %}数据同步仪表盘{% endblock %}
+
+{% block content_title %}数据同步仪表盘{% endblock %}
+
+{% block content %}
+<!-- 同步操作区域 -->
+<div class="mb-6">
+    <div class="row">
+        <div class="col-md-4">
+            <!-- 左侧同步按钮 -->
+            <div class="border rounded-lg p-4 bg-light">
+                <h4 class="mb-4">同步操作</h4>
+                <button id="sync-products-btn" class="btn btn-primary w-100 mb-3 sync-btn">
+                    <i class="fa fa-refresh mr-1"></i> 同步产品数据
+                </button>
+                <button id="sync-inventory-btn" class="btn btn-primary w-100 mb-3 sync-btn">
+                    <i class="fa fa-refresh mr-1"></i> 同步库存数据
+                </button>
+                <button id="sync-marketplaces-btn" class="btn btn-primary w-100 mb-3 sync-btn">
+                    <i class="fa fa-refresh mr-1"></i> 同步店铺信息
+                </button>
+                <!-- SPAD数据同步按钮 -->
+                <button id="sync-sp-ad-btn" class="btn btn-primary w-100 mb-3 sync-btn">
+                    <i class="fa fa-refresh mr-1"></i> 同步SPAD数据
+                </button>
+                <!-- SPKW数据同步按钮 -->
+                <button id="sync-sp-kw-btn" class="btn btn-primary w-100 sync-btn">
+                    <i class="fa fa-refresh mr-1"></i> 同步SPKW数据
+                </button>
+                <!-- SPTarget数据同步按钮 -->
+                <button id="sync-sp-target-btn" class="btn btn-primary w-100 mt-3 sync-btn">
+                    <i class="fa fa-refresh mr-1"></i> 同步SPTarget数据
+                </button>
+                <!-- SPPlacement数据同步按钮 -->
+                <button id="sync-sp-placement-btn" class="btn btn-primary w-100 mt-3 sync-btn">
+                    <i class="fa fa-refresh mr-1"></i> 同步SPPlacement数据
+                </button>
+                <!-- SPST数据同步按钮 -->
+                <button id="sync-sp-search-terms-btn" class="btn btn-primary w-100 mt-3 sync-btn">
+                    <i class="fa fa-refresh mr-1"></i> 同步SPST数据
+                </button>
+                <!-- SBKW数据同步按钮 -->
+                <button id="sync-sb-kw-btn" class="btn btn-primary w-100 mt-3 sync-btn">
+                    <i class="fa fa-refresh mr-1"></i> 同步SBKW数据
+                </button>
+                <!-- SBCampain数据同步按钮 -->
+                <button id="sync-sb-campaign-btn" class="btn btn-primary w-100 mt-3 sync-btn">
+                    <i class="fa fa-refresh mr-1"></i> 同步SBCampaign数据
+                </button>
+                <!-- SBCreative数据同步按钮 -->
+                <button id="sync-sb-creative-btn" class="btn btn-primary w-100 mt-3 sync-btn">
+                    <i class="fa fa-refresh mr-1"></i> 同步SBCreative数据
+                </button>
+                <!-- SBTargeting数据同步按钮 -->
+                <button id="sync-sb-targeting-btn" class="btn btn-primary w-100 mt-3 sync-btn">
+                    <i class="fa fa-refresh mr-1"></i> 同步SBTargeting数据
+                </button>
+                <!-- SBPlacement数据同步按钮 -->
+                <button id="sync-sb-placement-btn" class="btn btn-primary w-100 mt-3 sync-btn">
+                    <i class="fa fa-refresh mr-1"></i> 同步SBPlacement数据
+                </button>
+                <!-- SB搜索词数据同步按钮 -->
+                <button id="sync-sb-search-terms-btn" class="btn btn-primary w-100 mt-3 sync-btn">
+                    <i class="fa fa-refresh mr-1"></i> 同步SB搜索词数据
+                </button>
+                <!-- SD广告活动数据同步按钮 -->
+                <button id="sync-sd-campaign-btn" class="btn btn-primary w-100 mt-3 sync-btn">
+                    <i class="fa fa-refresh mr-1"></i> 同步SDCampaign数据
+                </button>
+                <!-- SDProduct数据同步按钮 -->
+                <button id="sync-sd-product-btn" class="btn btn-primary w-100 mt-3 sync-btn">
+                    <i class="fa fa-refresh mr-1"></i> 同步SDProduct数据
+                </button>
+                <!-- 库存分类账数据同步按钮 -->
+                <button id="sync-inventory-storage-ledger-btn" class="btn btn-primary w-100 mt-3 sync-btn">
+                    <i class="fa fa-refresh mr-1"></i> 同步库存分类账数据
+                </button>
+                <!-- 库存分类账明细数据同步按钮 -->
+                <button id="sync-inventory-storage-ledger-detail-btn" class="btn btn-primary w-100 mt-3 sync-btn">
+                    <i class="fa fa-refresh mr-1"></i> 同步库存分类账明细数据
+                </button>
+                <!-- 交易数据同步按钮 -->
+                <button id="sync-transaction-btn" class="btn btn-primary w-100 mt-3 sync-btn">
+                    <i class="fa fa-refresh mr-1"></i> 同步交易数据
+                </button>
+                <!-- 流量分析数据同步按钮 -->
+                <button id="sync-traffic-analysis-btn" class="btn btn-primary w-100 mt-3 sync-btn">
+                    <i class="fa fa-refresh mr-1"></i> 同步流量分析数据
+                </button>
+                <!-- FBA完整库存数据同步按钮 -->
+                <button id="sync-fba-inventory-full-btn" class="btn btn-primary w-100 mt-3 sync-btn">
+                    <i class="fa fa-refresh mr-1"></i> 同步完整FBA库存数据
+                </button>
+                <!-- 月度仓储费数据同步按钮 -->
+                <button id="sync-monthly-storage-fee-btn" class="btn btn-primary w-100 mt-3 sync-btn">
+                    <i class="fa fa-refresh mr-1"></i> 同步月度仓储费数据
+                </button>
+                <!-- 利润分析同步按钮 -->
+                <button id="sync-profit-analysis-btn" class="btn btn-primary w-100 mt-3 sync-btn">
+                    <i class="fa fa-refresh mr-1"></i> 同步利润分析数据
+                </button>
+            </div>
+        </div>
+        <div class="col-md-8">
+            <!-- 右侧参数区域 -->
+            <div class="border rounded-lg p-4">
+                <h4 class="mb-4">同步参数</h4>
+                <!-- 初始提示 -->
+                <div id="default-message" class="alert alert-info">
+                    <strong>请选择同步类型</strong>：点击左侧的同步按钮查看对应的同步参数和说明。
+                </div>
+
+                <!-- 同步产品参数区域 -->
+                <div id="product-params" class="params-section" style="display: none;">
+                    <div class="alert alert-info">
+                        <strong>产品同步说明：</strong>点击同步产品按钮，系统将从Gerpgo同步最新的产品数据并保存到本地数据库。
+                    </div>
+                    <div class="mt-3">
+                        <button id="confirm-product-sync" class="btn btn-success">确认同步产品数据</button>
+                    </div>
+                </div>
+
+                <!-- 同步库存参数区域 -->
+                <div id="inventory-params" class="params-section" style="display: none;">
+                    <div class="alert alert-info">
+                        <strong>库存同步说明：</strong>请选择日期范围，系统将从Gerpgo同步指定日期范围内的库存数据。
+                    </div>
+                    <div class="form-row mb-3">
+                        <div class="col-md-6">
+                            <label for="begin-date" class="form-label">开始日期</label>
+                            <input type="date" id="begin-date" class="form-control">
+                        </div>
+                        <div class="col-md-6">
+                            <label for="end-date" class="form-label">结束日期</label>
+                            <input type="date" id="end-date" class="form-control">
+                        </div>
+                    </div>
+                    <div class="mt-3">
+                        <button id="confirm-inventory-sync" class="btn btn-success">确认同步库存数据</button>
+                    </div>
+                </div>
+
+                <!-- 同步店铺参数区域 -->
+                <div id="marketplaces-params" class="params-section" style="display: none;">
+                    <div class="alert alert-info">
+                        <strong>店铺同步说明：</strong>点击同步店铺按钮，系统将从Gerpgo同步最新的店铺和市场信息并保存到本地数据库。
+                    </div>
+                    <div class="mt-3">
+                        <button id="confirm-marketplaces-sync" class="btn btn-success">确认同步店铺信息</button>
+                    </div>
+                </div>
+
+                <!-- 同步SBCampain参数区域 -->
+                <div id="sb-campaign-params" class="params-section" style="display: none;">
+                    <div class="alert alert-info">
+                        <strong>SBCampain同步说明：</strong>请选择日期范围，系统将从Gerpgo同步指定日期范围内的SBCampain数据。
+                    </div>
+                    <div class="form-row mb-3">
+                        <div class="col-md-6">
+                            <label for="sb-campaign-start-date" class="form-label">开始日期</label>
+                            <input type="date" id="sb-campaign-start-date" class="form-control">
+                        </div>
+                        <div class="col-md-6">
+                            <label for="sb-campaign-end-date" class="form-label">结束日期</label>
+                            <input type="date" id="sb-campaign-end-date" class="form-control">
+                        </div>
+                    </div>
+                    <div class="mt-3">
+                        <button id="confirm-sb-campaign-sync" class="btn btn-success">确认同步SBCampaign数据</button>
+                    </div>
+                </div>
+
+                <!-- SPCreative数据同步参数区域 -->
+                <div id="sb-creative-params" class="params-section" style="display: none;">
+                    <div class="alert alert-info">
+                        <strong>SPCreative数据同步说明：</strong>请选择日期范围，系统将从Gerpgo同步指定日期范围内的SPCreative数据。
+                    </div>
+                    <div class="form-row mb-3">
+                        <div class="col-md-6">
+                            <label for="sb-creative-start-date" class="form-label">开始日期</label>
+                            <input type="date" id="sb-creative-start-date" class="form-control">
+                        </div>
+                        <div class="col-md-6">
+                            <label for="sb-creative-end-date" class="form-label">结束日期</label>
+                            <input type="date" id="sb-creative-end-date" class="form-control">
+                        </div>
+                    </div>
+                    <div class="mt-3">
+                        <button id="confirm-sb-creative-sync" class="btn btn-success">确认同步SPCreative数据</button>
+                    </div>
+                </div>
+
+                <!-- SPAD数据同步参数区域 -->
+                <div id="sp-ad-params" class="params-section" style="display: none;">
+                    <div class="alert alert-info">
+                        <strong>SPAD数据同步说明：</strong>请选择日期范围，系统将从Gerpgo同步指定日期范围内的SP广告数据。
+                    </div>
+                    <div class="form-row mb-3">
+                        <div class="col-md-6">
+                            <label for="sp-ad-start-date" class="form-label">开始日期</label>
+                            <input type="date" id="sp-ad-start-date" class="form-control">
+                        </div>
+                        <div class="col-md-6">
+                            <label for="sp-ad-end-date" class="form-label">结束日期</label>
+                            <input type="date" id="sp-ad-end-date" class="form-control">
+                        </div>
+                    </div>
+                    <div class="mt-3">
+                        <button id="confirm-sp-ad-sync" class="btn btn-success">确认同步SPAD数据</button>
+                    </div>
+                </div>
+
+                <!-- SPKW数据同步参数区域 -->
+                <div id="sp-kw-params" class="params-section" style="display: none;">
+                    <div class="alert alert-info">
+                        <strong>SPKW数据同步说明：</strong>请选择日期范围，系统将从Gerpgo同步指定日期范围内的SP关键词数据。
+                    </div>
+                    <div class="form-row mb-3">
+                        <div class="col-md-6">
+                            <label for="sp-kw-start-date" class="form-label">开始日期</label>
+                            <input type="date" id="sp-kw-start-date" class="form-control">
+                        </div>
+                        <div class="col-md-6">
+                            <label for="sp-kw-end-date" class="form-label">结束日期</label>
+                            <input type="date" id="sp-kw-end-date" class="form-control">
+                        </div>
+                    </div>
+                    <div class="mt-3">
+                        <button id="confirm-sp-kw-sync" class="btn btn-success">确认同步SPKW数据</button>
+                    </div>
+                </div>
+
+                <!-- SPTarget数据同步参数区域 -->
+                <div id="sp-target-params" class="params-section" style="display: none;">
+                    <div class="alert alert-info">
+                        <strong>SPTarget数据同步说明：</strong>请选择日期范围，系统将从Gerpgo同步指定日期范围内的SP广告目标数据。
+                    </div>
+                    <div class="form-row mb-3">
+                        <div class="col-md-6">
+                            <label for="sp-target-start-date" class="form-label">开始日期</label>
+                            <input type="date" id="sp-target-start-date" class="form-control">
+                        </div>
+                        <div class="col-md-6">
+                            <label for="sp-target-end-date" class="form-label">结束日期</label>
+                            <input type="date" id="sp-target-end-date" class="form-control">
+                        </div>
+                    </div>
+                    <div class="mt-3">
+                        <button id="confirm-sp-target-sync" class="btn btn-success">确认同步SPTarget数据</button>
+                    </div>
+                </div>
+
+                <!-- SPPlacement数据同步参数区域 -->
+                <div id="sp-placement-params" class="params-section" style="display: none;">
+                    <div class="alert alert-info">
+                        <strong>SPPlacement数据同步说明：</strong>请选择日期范围，系统将从Gerpgo同步指定日期范围内的SP广告展示位置数据。
+                    </div>
+                    <div class="form-row mb-3">
+                        <div class="col-md-6">
+                            <label for="sp-placement-start-date" class="form-label">开始日期</label>
+                            <input type="date" id="sp-placement-start-date" class="form-control">
+                        </div>
+                        <div class="col-md-6">
+                            <label for="sp-placement-end-date" class="form-label">结束日期</label>
+                            <input type="date" id="sp-placement-end-date" class="form-control">
+                        </div>
+                    </div>
+                    <div class="mt-3">
+                        <button id="confirm-sp-placement-sync" class="btn btn-success">确认同步SPPlacement数据</button>
+                    </div>
+                </div>
+
+                <!-- SPST数据同步参数区域 -->
+                <div id="sp-search-terms-params" class="params-section" style="display: none;">
+                    <div class="alert alert-info">
+                        <strong>SPST数据同步说明：</strong>请选择日期范围，系统将从Gerpgo同步指定日期范围内的SP广告搜索词数据。
+                    </div>
+                    <div class="form-row mb-3">
+                        <div class="col-md-6">
+                            <label for="sp-search-terms-start-date" class="form-label">开始日期</label>
+                            <input type="date" id="sp-search-terms-start-date" class="form-control">
+                        </div>
+                        <div class="col-md-6">
+                            <label for="sp-search-terms-end-date" class="form-label">结束日期</label>
+                            <input type="date" id="sp-search-terms-end-date" class="form-control">
+                        </div>
+                    </div>
+                    <div class="mt-3">
+                        <button id="confirm-sp-search-terms-sync" class="btn btn-success">确认同步SPST数据</button>
+                    </div>
+                </div>
+
+                <!-- SBKW数据同步参数区域 -->
+                <div id="sb-kw-params" class="params-section" style="display: none;">
+                    <div class="alert alert-info">
+                        <strong>SBKW数据同步说明：</strong>请选择日期范围，系统将从Gerpgo同步指定日期范围内的SB关键词数据。
+                    </div>
+                    <div class="form-row mb-3">
+                        <div class="col-md-6">
+                            <label for="sb-kw-start-date" class="form-label">开始日期</label>
+                            <input type="date" id="sb-kw-start-date" class="form-control">
+                        </div>
+                        <div class="col-md-6">
+                            <label for="sb-kw-end-date" class="form-label">结束日期</label>
+                            <input type="date" id="sb-kw-end-date" class="form-control">
+                        </div>
+                    </div>
+                    <div class="mt-3">
+                        <button id="confirm-sb-kw-sync" class="btn btn-success">确认同步SBKW数据</button>
+                    </div>
+                </div>
+
+                <!-- SBTargeting数据同步参数区域 -->
+                <div id="sb-targeting-params" class="params-section" style="display: none;">
+                    <div class="alert alert-info">
+                        <strong>SBTargeting同步说明：</strong>请选择日期范围，系统将从Gerpgo同步指定日期范围内的SBTargeting数据。
+                    </div>
+                    <div class="form-row mb-3">
+                        <div class="col-md-6">
+                            <label for="sb-targeting-start-date" class="form-label">开始日期</label>
+                            <input type="date" id="sb-targeting-start-date" class="form-control">
+                        </div>
+                        <div class="col-md-6">
+                            <label for="sb-targeting-end-date" class="form-label">结束日期</label>
+                            <input type="date" id="sb-targeting-end-date" class="form-control">
+                        </div>
+                    </div>
+                    <div class="mt-3">
+                        <button id="confirm-sb-targeting-sync" class="btn btn-success">确认同步SBTargeting数据</button>
+                    </div>
+                </div>
+
+                <!-- SBPlacement数据同步参数区域 -->
+                <div id="sb-placement-params" class="params-section" style="display: none;">
+                    <div class="alert alert-info">
+                        <strong>SBPlacement同步说明：</strong>请选择日期范围，系统将从Gerpgo同步指定日期范围内的SB广告展示位置数据。
+                    </div>
+                    <div class="form-row mb-3">
+                        <div class="col-md-6">
+                            <label for="sb-placement-start-date" class="form-label">开始日期</label>
+                            <input type="date" id="sb-placement-start-date" class="form-control">
+                        </div>
+                        <div class="col-md-6">
+                            <label for="sb-placement-end-date" class="form-label">结束日期</label>
+                            <input type="date" id="sb-placement-end-date" class="form-control">
+                        </div>
+                    </div>
+                    <div class="mt-3">
+                        <button id="confirm-sb-placement-sync" class="btn btn-success">确认同步SBPlacement数据</button>
+                    </div>
+                </div>
+
+                <!-- 添加SB搜索词数据同步参数区域 -->
+                <div id="sb-search-terms-params" class="params-section" style="display: none;">
+                    <div class="alert alert-info">
+                        <strong>SB搜索词同步说明：</strong>请选择日期范围，系统将从Gerpgo同步指定日期范围内的SB搜索词数据。
+                    </div>
+                    <div class="form-row mb-3">
+                        <div class="col-md-6">
+                            <label for="sb-search-terms-start-date" class="form-label">开始日期</label>
+                            <input type="date" id="sb-search-terms-start-date" class="form-control">
+                        </div>
+                        <div class="col-md-6">
+                            <label for="sb-search-terms-end-date" class="form-label">结束日期</label>
+                            <input type="date" id="sb-search-terms-end-date" class="form-control">
+                        </div>
+                    </div>
+                    <div class="mt-3">
+                        <button id="confirm-sb-search-terms-sync" class="btn btn-success">确认同步SBSearchTerms数据</button>
+                    </div>
+                </div>
+
+                <!-- SDCampaign数据同步参数区域 -->
+                <div id="sd-campaign-params" class="params-section" style="display: none;">
+                    <div class="alert alert-info">
+                        <strong>SDCampaign数据同步说明：</strong>请选择日期范围，系统将从Gerpgo同步指定日期范围内的SDCampaign数据。
+                    </div>
+                    <div class="form-row mb-3">
+                        <div class="col-md-6">
+                            <label for="sd-campaign-start-date" class="form-label">开始日期</label>
+                            <input type="date" id="sd-campaign-start-date" class="form-control">
+                        </div>
+                        <div class="col-md-6">
+                            <label for="sd-campaign-end-date" class="form-label">结束日期</label>
+                            <input type="date" id="sd-campaign-end-date" class="form-control">
+                        </div>
+                    </div>
+                    <div class="mt-3">
+                        <button id="confirm-sd-campaign-sync" class="btn btn-success">确认同步SDCampaign数据</button>
+                    </div>
+                </div>
+
+                <!-- SDProduct数据同步参数区域 -->
+                <div id="sd-product-params" class="params-section" style="display: none;">
+                    <div class="alert alert-info">
+                        <strong>SDProduct数据同步说明：</strong>请选择日期范围，系统将从Gerpgo同步指定日期范围内的SDProduct数据。
+                    </div>
+                    <div class="form-row mb-3">
+                        <div class="col-md-6">
+                            <label for="sd-product-start-date" class="form-label">开始日期</label>
+                            <input type="date" id="sd-product-start-date" class="form-control">
+                        </div>
+                        <div class="col-md-6">
+                            <label for="sd-product-end-date" class="form-label">结束日期</label>
+                            <input type="date" id="sd-product-end-date" class="form-control">
+                        </div>
+                    </div>
+                    <div class="mt-3">
+                        <button id="confirm-sd-product-sync" class="btn btn-success">确认同步SDProduct数据</button>
+                    </div>
+                </div>
+
+                <!-- 库存分类账数据同步参数区域 -->
+                <div id="inventory-storage-ledger-params" class="params-section" style="display: none;">
+                    <div class="alert alert-info">
+                        <strong>库存分类账同步说明：</strong>请选择日期范围，系统将从Gerpgo同步指定日期范围内的库存分类账数据。
+                    </div>
+                    <div class="form-row mb-3">
+                        <div class="col-md-6">
+                            <label for="inventory-storage-ledger-start-date" class="form-label">开始日期</label>
+                            <input type="date" id="inventory-storage-ledger-start-date" class="form-control">
+                        </div>
+                        <div class="col-md-6">
+                            <label for="inventory-storage-ledger-end-date" class="form-label">结束日期</label>
+                            <input type="date" id="inventory-storage-ledger-end-date" class="form-control">
+                        </div>
+                    </div>
+                    <div class="mt-3">
+                        <button id="confirm-inventory-storage-ledger-sync" class="btn btn-success">确认同步库存分类账数据</button>
+                    </div>
+                </div>
+
+                <!-- 库存分类账明细数据同步参数区域 -->
+                <div id="inventory-storage-ledger-detail-params" class="params-section" style="display: none;">
+                    <div class="alert alert-info">
+                        <strong>库存分类账明细同步说明：</strong>请选择日期范围，系统将从Gerpgo同步指定日期范围内的库存分类账明细数据。
+                    </div>
+                    <div class="form-row mb-3">
+                        <div class="col-md-6">
+                            <label for="inventory-storage-ledger-detail-start-date" class="form-label">开始日期</label>
+                            <input type="date" id="inventory-storage-ledger-detail-start-date" class="form-control">
+                        </div>
+                        <div class="col-md-6">
+                            <label for="inventory-storage-ledger-detail-end-date" class="form-label">结束日期</label>
+                            <input type="date" id="inventory-storage-ledger-detail-end-date" class="form-control">
+                        </div>
+                    </div>
+                    <div class="mt-3">
+                        <button id="confirm-inventory-storage-ledger-detail-sync"
+                            class="btn btn-success">确认同步库存分类账明细数据</button>
+                    </div>
+                </div>
+
+                <!-- 交易数据参数设置区域 -->
+                <div id="transaction-params" class="params-section" style="display: none;">
+                    <div class="alert alert-info">
+                        <strong>交易数据同步说明：</strong>请选择日期范围，系统将从Gerpgo同步指定日期范围内的交易数据。
+                    </div>
+                    <div class="form-row mb-3">
+                        <div class="col-md-6">
+                            <label for="transaction-start-date" class="form-label">开始日期</label>
+                            <input type="date" id="transaction-start-date" class="form-control">
+                        </div>
+                        <div class="col-md-6">
+                            <label for="transaction-end-date" class="form-label">结束日期</label>
+                            <input type="date" id="transaction-end-date" class="form-control">
+                        </div>
+                    </div>
+                    <div class="mt-3">
+                        <button id="confirm-transaction-sync" class="btn btn-success">确认同步交易数据</button>
+                    </div>
+                </div>
+
+                <!-- 流量分析数据参数设置区域 -->
+                <div id="traffic-analysis-params" class="params-section" style="display: none;">
+                    <div class="alert alert-info">
+                        <strong>流量分析数据同步说明：</strong>请选择日期范围，系统将从Gerpgo同步指定日期范围内的流量分析数据。
+                    </div>
+                    <div class="form-row mb-3">
+                        <div class="col-md-6">
+                            <label for="traffic-analysis-start-date" class="form-label">开始日期</label>
+                            <input type="date" id="traffic-analysis-start-date" class="form-control">
+                        </div>
+                        <div class="col-md-6">
+                            <label for="traffic-analysis-end-date" class="form-label">结束日期</label>
+                            <input type="date" id="traffic-analysis-end-date" class="form-control">
+                        </div>
+                    </div>
+                    <div class="mt-3">
+                        <button id="confirm-traffic-analysis-sync" class="btn btn-success">确认同步流量分析数据</button>
+                    </div>
+                </div>
+
+                <!-- FBA库存完整数据同步参数区域 -->
+                <div id="fba-inventory-full-params" class="params-section" style="display: none;">
+                    <div class="alert alert-info">
+                        <strong>完整FBA库存数据同步说明：</strong>请选择日期范围和筛选条件，系统将从Gerpgo同步指定条件的完整FBA库存数据。
+                    </div>
+                    <div class="mt-3">
+                        <button id="confirm-fba-inventory-full-sync" class="btn btn-success">确认同步完整FBA库存数据</button>
+                    </div>
+                </div>
+
+                <!-- 月度仓储费数据同步参数区域 -->
+                <div id="monthly-storage-fee-params" class="params-section" style="display: none;">
+                    <div class="alert alert-info">
+                        <strong>月度仓储费数据同步说明：</strong>请选择年月，系统将从Gerpgo同步指定年月的月度仓储费数据。
+                    </div>
+                    <div class="form-row mb-3">
+                        <div class="col-md-6">
+                            <label for="monthly-storage-fee-month" class="form-label">月</label>
+                            <input type="month" id="monthly-storage-fee-month" class="form-control" min="1" max="12">
+                        </div>
+                    </div>
+                    <div class="mt-3">
+                        <button id="confirm-monthly-storage-fee-sync" class="btn btn-success">确认同步月度仓储费数据</button>
+                    </div>
+                </div>
+
+                <!-- 利润分析数据同步参数区域 -->
+                <div id="profit-analysis-params" class="params-section" style="display: none;">
+                    <div class="alert alert-info">
+                        <strong>利润分析数据同步说明：</strong>请选择日期范围，系统将从Gerpgo同步指定日期范围内的利润分析数据。
+                    </div>
+                    <div class="form-row mb-3">
+                        <div class="col-md-6">
+                            <label for="profit-analysis-start-date" class="form-label">开始日期</label>
+                            <input type="date" id="profit-analysis-start-date" class="form-control">
+                        </div>
+                        <div class="col-md-6">
+                            <label for="profit-analysis-end-date" class="form-label">结束日期</label>
+                            <input type="date" id="profit-analysis-end-date" class="form-control">
+                        </div>
+                    </div>
+                    <div class="mt-3">
+                        <button id="confirm-profit-analysis-sync" class="btn btn-success">确认同步利润分析数据</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 同步状态卡片 -->
+        <div class="row mb-6">
+            <!-- 产品同步状态卡片 -->
+            <div class="col-md-4">
+                <div class="card text-center">
+                    <div class="card-header bg-primary text-white">
+                        <h5>最近产品同步</h5>
+                    </div>
+                    <div class="card-body">
+                        <div id="last-product-sync" class="text-muted">暂无同步记录</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 库存同步状态卡片 -->
+            <div class="col-md-4">
+                <div class="card text-center">
+                    <div class="card-header bg-primary text-white">
+                        <h5>最近库存同步</h5>
+                    </div>
+                    <div class="card-body">
+                        <div id="last-inventory-sync" class="text-muted">暂无同步记录</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 店铺同步状态卡片 -->
+            <div class="col-md-4">
+                <div class="card text-center">
+                    <div class="card-header bg-primary text-white">
+                        <h5>最近店铺同步</h5>
+                    </div>
+                    <div class="card-body">
+                        <div id="last-marketplaces-sync" class="text-muted">暂无同步记录</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- SPAD同步状态卡片 -->
+            <div class="col-md-4">
+                <div class="card text-center">
+                    <div class="card-header bg-primary text-white">
+                        <h5>最近SPAD数据同步</h5>
+                    </div>
+                    <div class="card-body">
+                        <div id="last-sp-ad-sync" class="text-muted">暂无同步记录</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- SPKW数据同步状态卡片 -->
+            <div class="col-md-4">
+                <div class="card text-center">
+                    <div class="card-header bg-primary text-white">
+                        <h5>最近SPKW数据同步</h5>
+                    </div>
+                    <div class="card-body">
+                        <div id="last-sp-kw-sync" class="text-muted">暂无同步记录</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- SPTarget数据同步状态卡片 -->
+            <div class="col-md-4">
+                <div class="card text-center">
+                    <div class="card-header bg-primary text-white">
+                        <h5>最近SPTarget数据同步</h5>
+                    </div>
+                    <div class="card-body">
+                        <div id="last-sp-target-sync" class="text-muted">暂无同步记录</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- SPPlacement数据同步状态卡片 -->
+            <div class="col-md-4">
+                <div class="card text-center">
+                    <div class="card-header bg-primary text-white">
+                        <h5>最近SPPlacement数据同步</h5>
+                    </div>
+                    <div class="card-body">
+                        <div id="last-sp-placement-sync" class="text-muted">暂无同步记录</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- SPST数据同步状态卡片 -->
+            <div class="col-md-4">
+                <div class="card text-center">
+                    <div class="card-header bg-primary text-white">
+                        <h5>最近SPST数据同步</h5>
+                    </div>
+                    <div class="card-body">
+                        <div id="last-sp-search-terms-sync" class="text-muted">暂无同步记录</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- SBKW数据同步状态卡片 -->
+            <div class="col-md-4">
+                <div class="card text-center">
+                    <div class="card-header bg-primary text-white">
+                        <h5>最近SBKW数据同步</h5>
+                    </div>
+                    <div class="card-body">
+                        <div id="last-sb-kw-sync" class="text-muted">暂无同步记录</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- SBCampain数据同步状态卡片 -->
+            <div class="col-md-4">
+                <div class="card text-center">
+                    <div class="card-header bg-primary text-white">
+                        <h5>最近SBCampain数据同步</h5>
+                    </div>
+                    <div class="card-body">
+                        <div id="last-sb-campaign-sync" class="text-muted">暂无同步记录</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- SPCreative数据同步状态卡片 -->
+            <div class="col-md-4">
+                <div class="card text-center">
+                    <div class="card-header bg-primary text-white">
+                        <h5>最近SPCreative数据同步</h5>
+                    </div>
+                    <div class="card-body">
+                        <div id="last-sb-creative-sync" class="text-muted">暂无同步记录</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- SBTargeting数据同步状态卡片 -->
+            <div class="col-md-4">
+                <div class="card text-center">
+                    <div class="card-header bg-primary text-white">
+                        <h5>最近SBTargeting数据同步</h5>
+                    </div>
+                    <div class="card-body">
+                        <div id="last-sb-targeting-sync" class="text-muted">暂无同步记录</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- SBSearchTerms数据同步状态卡片 -->
+            <div class="col-md-4">
+                <div class="card text-center">
+                    <div class="card-header bg-primary text-white">
+                        <h5>最近SBSearchTerms数据同步</h5>
+                    </div>
+                    <div class="card-body">
+                        <div id="last-sb-search-terms-sync" class="text-muted">暂无同步记录</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- SDCampaign数据同步状态卡片 -->
+            <div class="col-md-4">
+                <div class="card text-center">
+                    <div class="card-header bg-primary text-white">
+                        <h5>最近SDCampaign数据同步</h5>
+                    </div>
+                    <div class="card-body">
+                        <div id="last-sd-campaign-sync" class="text-muted">暂无同步记录</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- SDProduct数据同步状态卡片 -->
+            <div class="col-md-4">
+                <div class="card text-center">
+                    <div class="card-header bg-primary text-white">
+                        <h5>最近SDProduct数据同步</h5>
+                    </div>
+                    <div class="card-body">
+                        <div id="last-sd-product-sync" class="text-muted">暂无同步记录</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 流量分析数据同步状态卡片 -->
+            <div class="col-md-4">
+                <div class="card text-center">
+                    <div class="card-header bg-primary text-white">
+                        <h5>最近流量分析数据同步</h5>
+                    </div>
+                    <div class="card-body">
+                        <div id="last-traffic-analysis-sync" class="text-muted">暂无同步记录</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 库存分类账数据同步状态卡片 -->
+            <div class="col-md-4">
+                <div class="card text-center">
+                    <div class="card-header bg-primary text-white">
+                        <h5>最近库存分类账数据同步</h5>
+                    </div>
+                    <div class="card-body">
+                        <div id="last-inventory-storage-ledger-sync" class="text-muted">暂无同步记录</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 完整FBA库存数据同步状态卡片 -->
+            <div class="col-md-4">
+                <div class="card text-center">
+                    <div class="card-header bg-primary text-white">
+                        <h5>最近完整FBA库存数据同步</h5>
+                    </div>
+                    <div class="card-body">
+                        <div id="last-fba-inventory-full-sync" class="text-muted">暂无同步记录</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 月度仓储费数据同步卡片 -->
+            <div class="col-md-4">
+                <div class="card text-center">
+                    <div class="card-header bg-primary text-white">
+                        <h5>最近月度仓储费数据同步</h5>
+                    </div>
+                    <div class="card-body">
+                        <div id="last-monthly-storage-fee-sync" class="text-muted">暂无同步记录</div>
+                    </div>
+                </div>
+            </div>
+
+
+            <!-- 利润分析同步状态卡片 -->
+             <div class="col-md-4">
+                <div class="card text-center">
+                    <div class="card-header bg-primary text-white">
+                        <h5>最近利润分析数据同步</h5>
+                    </div>
+                    <div class="card-body">
+                        <div id="last-profit-analysis-sync" class="text-muted">暂无同步记录</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+        <!-- 同步日志表格 -->
+        <div class="mb-6">
+            <h4 class="mb-4">同步日志</h4>
+            <div class="table-responsive">
+                <table class="table table-bordered">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>同步类型</th>
+                            <th>状态</th>
+                            <th>开始时间</th>
+                            <th>结束时间</th>
+                            <th>总条数</th>
+                            <th>成功条数</th>
+                            <th>失败条数</th>
+                            <th>错误详情</th>
+                        </tr>
+                    </thead>
+                    <tbody id="sync-logs-table">
+                        <tr>
+                            <td colspan="9" class="text-center">加载中...</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- 同步模态框 -->
+        <div class="modal fade" id="sync-modal" tabindex="-1" role="dialog" aria-labelledby="sync-modal-label"
+            aria-hidden="true">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="sync-modal-label">数据同步</h5>
+                        <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <p>正在同步数据，请稍候...</p>
+                        <div class="progress">
+                            <div class="progress-bar progress-bar-striped progress-bar-animated" role="progressbar"
+                                style="width: 0%" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100"></div>
+                        </div>
+                        <div class="mt-3 text-center" id="sync-status-text">准备同步...</div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" id="close-sync-modal" disabled
+                            data-bs-dismiss="modal">关闭</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% endblock %}
+
+        {% block scripts %}
+        <script>
+            // 同步数据函数
+            function syncData(type, params = {}) {
+                console.log(`开始同步${type}数据，参数:`, params);
+
+                // 选择正确的端点
+                let endpoint = '';
+                let modalTitle = '';
+
+                switch (type) {
+                    case 'products':
+                        endpoint = '/api/v1/sync/products/';
+                        modalTitle = '同步产品数据';
+                        break;
+                    case 'inventory':
+                        endpoint = '/api/v1/sync/inventory/';
+                        modalTitle = '同步库存数据';
+                        break;
+                    case 'marketplaces':
+                        endpoint = '/api/v1/sync/marketplaces/';
+                        modalTitle = '同步店铺信息';
+                        break;
+                    case 'sp_ad_data':
+                        endpoint = '/api/v1/sync/sp_ad_data/';
+                        modalTitle = '同步SPAD数据';
+                        break;
+                    case 'sp_kw_data':
+                        endpoint = '/api/v1/sync/sp_kw_data/';
+                        modalTitle = '同步SPKW数据';
+                        break;
+                    case 'sp_target_data':
+                        endpoint = '/api/v1/sync/sp_target_data/';
+                        modalTitle = '同步SPTarget数据';
+                        break;
+                    case 'sp_placement_data':
+                        endpoint = '/api/v1/sync/sp_placement_data/';
+                        modalTitle = '同步SPPlacement数据';
+                        break;
+                    case 'sp_search_terms_data':
+                        endpoint = '/api/v1/sync/sp_search_terms_data/';
+                        modalTitle = '同步SPST数据';
+                        break;
+                    case 'sb_kw_data':
+                        endpoint = '/api/v1/sync/sb_kw_data/';
+                        modalTitle = '同步SBKW数据';
+                        break;
+                    case 'sb_campaign_data':
+                        endpoint = '/api/v1/sync/sb_campaign_data/';
+                        modalTitle = '同步SBCampain数据';
+                        break;
+                    case 'sb_creative_data':
+                        endpoint = '/api/v1/sync/sb_creative_data/';
+                        modalTitle = '同步SBCreative数据';
+                        break;
+                    case 'sb_targeting_data':
+                        endpoint = '/api/v1/sync/sb_targeting_data/';
+                        modalTitle = '同步SBTargeting数据';
+                        break;
+                    case 'sb_placement_data':
+                        endpoint = '/api/v1/sync/sb_placement_data/';
+                        modalTitle = '同步SBPlacement数据';
+                        break;
+                    case 'sb_search_terms_data':
+                        endpoint = '/api/v1/sync/sb_search_terms_data/';
+                        modalTitle = '同步SBSearchTerms数据';
+                        break;
+                    case 'sd_campaign_data':
+                        endpoint = '/api/v1/sync/sd_campaign_data/';
+                        modalTitle = '同步SDCampaign数据';
+                        break;
+                    case 'sd_product_data':
+                        endpoint = '/api/v1/sync/sd_product_data/';
+                        modalTitle = '同步SDProduct数据';
+                        break;
+                    case 'inventory_storage_ledger':
+                        endpoint = '/api/v1/sync/inventory_storage_ledger/';
+                        modalTitle = '同步库存分类账数据';
+                        break;
+                    case 'inventory_storage_ledger_detail':
+                        endpoint = '/api/v1/sync/inventory_storage_ledger_detail/';
+                        modalTitle = '同步库存分类账明细数据';
+                        break;
+                    case 'transaction':
+                        endpoint = '/api/v1/sync/transaction/';
+                        modalTitle = '同步交易数据';
+                        break;
+                    case 'traffic_analysis':
+                        endpoint = '/api/v1/sync/traffic_analysis/';
+                        modalTitle = '同步流量分析数据';
+                        break;
+                    case 'fba_inventory_full':
+                        endpoint = '/api/v1/sync/fba_inventory_full/';
+                        modalTitle = '同步FBA库存数据';
+                        break;
+                    case 'monthly_storage_fee':
+                        endpoint = '/api/v1/sync/mon_storage_fee/';
+                        modalTitle = '同步月度仓储费数据';
+                        break;
+                    case 'profit_analysis':
+                        endpoint = '/api/v1/sync/profit_analysis/';
+                        modalTitle = '同步利润分析数据';
+                        break;
+                    default:
+                        console.error('未知的同步类型:', type);
+                        return;
+                }
+
+                // 显示模态框
+                showSyncModal(modalTitle);
+
+                const progressBar = $('.progress-bar');
+                const statusText = $('#sync-status-text');
+
+                // 重置进度条和状态文本
+                progressBar.css('width', '0%');
+                progressBar.removeClass('bg-danger').addClass('bg-primary');
+                statusText.text('准备同步...');
+
+                // 发送同步请求
+                $.ajax({
+                    url: endpoint,
+                    type: 'POST',
+                    data: JSON.stringify(params),
+                    contentType: 'application/json',
+                    success: function (data) {
+                        console.log(`${type}同步请求成功:`, data);
+
+                        // 轮询同步状态
+                        const checkSyncStatus = setInterval(function () {
+                            $.ajax({
+                                url: `/api/v1/sync/logs/?sync_type=${type}&ordering=-created_at&limit=1`,
+                                type: 'GET',
+                                success: function (logData) {
+                                    console.log(`获取${type}同步状态:`, logData);
+
+                                    if (logData.results && logData.results.length > 0) {
+                                        const latestLog = logData.results[0];
+
+                                        // 更新进度
+                                        if (latestLog.status === 'success' || latestLog.status === 'completed' || latestLog.status === 'partial_success') {
+                                            progressBar.css('width', '100%');
+                                            statusText.text(`同步完成！成功: ${latestLog.success_count || 0}条，失败: ${latestLog.error_count || 0}条`);
+                                            clearInterval(checkSyncStatus);
+
+                                            // 启用关闭按钮
+                                            $('#close-sync-modal').prop('disabled', false);
+
+                                            // 重新加载同步日志
+                                            loadSyncLogs();
+                                        } else if (latestLog.status === 'failed') {
+                                            progressBar.css('width', '100%');
+                                            progressBar.removeClass('bg-primary').addClass('bg-danger');
+                                            statusText.text(`同步失败！原因: ${latestLog.error_message || '未知错误'}`);
+                                            clearInterval(checkSyncStatus);
+
+                                            // 启用关闭按钮
+                                            $('#close-sync-modal').prop('disabled', false);
+
+                                            // 重新加载同步日志
+                                            loadSyncLogs();
+                                        } else {
+                                            // 假设正在进行中，更新进度
+                                            const progress = Math.min(95, Math.floor(Math.random() * 90) + 10);
+                                            progressBar.css('width', `${progress}%`);
+                                            statusText.text(`正在同步... ${progress}%`);
+                                        }
+                                    }
+                                },
+                                error: function (xhr) {
+                                    console.error(`获取${type}同步状态失败:`, xhr);
+                                    clearInterval(checkSyncStatus);
+                                    statusText.text('检查同步状态失败');
+                                    $('#close-sync-modal').prop('disabled', false);
+                                }
+                            });
+                        }, 2000); // 每2秒检查一次状态
+                    },
+                    error: function (xhr) {
+                        console.error(`${type}同步请求失败:`, xhr);
+                        progressBar.css('width', '100%');
+                        progressBar.removeClass('bg-primary').addClass('bg-danger');
+
+                        // 显示详细错误信息
+                        let errorMessage = '同步请求失败！请重试';
+                        if (xhr.responseJSON && xhr.responseJSON.message) {
+                            errorMessage = xhr.responseJSON.message;
+                        } else if (xhr.responseText) {
+                            try {
+                                const errorData = JSON.parse(xhr.responseText);
+                                errorMessage = errorData.message || errorData.error || errorMessage;
+                            } catch (e) {
+                                errorMessage = xhr.responseText.substring(0, 200) + (xhr.responseText.length > 200 ? '...' : '');
+                            }
+                        }
+
+                        statusText.text(errorMessage);
+                        $('#close-sync-modal').prop('disabled', false);
+                    }
+                });
+            }
+
+            // 加载同步日志
+            function loadSyncLogs() {
+                $.ajax({
+                    url: '/api/v1/sync/logs/?ordering=-created_at&limit=20',
+                    type: 'GET',
+                    success: function (data) {
+                        const logList = $('#sync-logs-table');
+                        logList.empty();
+
+                        if (data.results && data.results.length > 0) {
+                            data.results.forEach(function (log) {
+                                const row = $(`
+                            <tr>
+                                <td>${log.id}</td>
+                                <td>${getSyncTypeText(log.sync_type)}</td>
+                                <td>
+                                    <span class="badge bg-${getStatusClass(log.status)}">
+                                        ${getStatusText(log.status)}
+                                    </span>
+                                </td>
+                                <td>${new Date(log.start_time).toLocaleString()}</td>
+                                <td>${log.end_time ? new Date(log.end_time).toLocaleString() : '-'}</td>
+                                <td>${log.total_count}</td>
+                                <td>${log.success_count}</td>
+                                <td>${log.failed_count}</td>
+                                <td>
+                                    ${log.error_message ?
+                                        `<button class="btn btn-sm btn-danger" onclick="showErrorDetails('${log.error_message}')">错误详情</button>` :
+                                        '-'}
+                                </td>
+                            </tr>
+                        `);
+                                logList.append(row);
+                            });
+                        } else {
+                            logList.html('<tr><td colspan="9" class="text-center">暂无同步日志</td></tr>');
+                        }
+                    },
+                    error: function (xhr) {
+                        console.error('加载同步日志失败:', xhr);
+                        $('#sync-logs-table').html('<tr><td colspan="9" class="text-center text-danger">加载同步日志失败</td></tr>');
+                    }
+                });
+            }
+
+            // 加载同步状态
+            function loadSyncStatus() {
+                // 加载最近产品同步
+                $.ajax({
+                    url: '/api/v1/sync/logs/?sync_type=products&ordering=-created_at&limit=1',
+                    type: 'GET',
+                    success: function (data) {
+                        if (data.results && data.results.length > 0) {
+                            const log = data.results[0];
+                            $('#last-product-sync').html(`
+                        <div class="mb-1">状态: <span class="badge bg-${getStatusClass(log.status)}">${getStatusText(log.status)}</span></div>
+                        <div>时间: ${new Date(log.start_time).toLocaleString()}</div>
+                        <div>${log.success_count}成功 / ${log.failed_count}失败</div>
+                    `);
+                        }
+                    }
+                });
+
+                // 加载最近库存同步
+                $.ajax({
+                    url: '/api/v1/sync/logs/?sync_type=inventory&ordering=-created_at&limit=1',
+                    type: 'GET',
+                    success: function (data) {
+                        if (data.results && data.results.length > 0) {
+                            const log = data.results[0];
+                            $('#last-inventory-sync').html(`
+                        <div class="mb-1">状态: <span class="badge bg-${getStatusClass(log.status)}">${getStatusText(log.status)}</span></div>
+                        <div>时间: ${new Date(log.start_time).toLocaleString()}</div>
+                        <div>${log.success_count}成功 / ${log.failed_count}失败</div>
+                    `);
+                        }
+                    }
+                });
+
+                // 加载最近店铺同步
+                $.ajax({
+                    url: '/api/v1/sync/logs/?sync_type=marketplaces&ordering=-created_at&limit=1',
+                    type: 'GET',
+                    success: function (data) {
+                        if (data.results && data.results.length > 0) {
+                            const log = data.results[0];
+                            $('#last-marketplaces-sync').html(`
+                        <div class="mb-1">状态: <span class="badge bg-${getStatusClass(log.status)}">${getStatusText(log.status)}</span></div>
+                        <div>时间: ${new Date(log.start_time).toLocaleString()}</div>
+                        <div>${log.success_count}成功 / ${log.failed_count}失败</div>
+                    `);
+                        }
+                    }
+                });
+
+                // 加载最近SPAD数据同步
+                $.ajax({
+                    url: '/api/v1/sync/logs/?sync_type=sp_ad_data&ordering=-created_at&limit=1',
+                    type: 'GET',
+                    success: function (data) {
+                        if (data.results && data.results.length > 0) {
+                            const log = data.results[0];
+                            $('#last-sp-ad-sync').html(`
+                        <div class="mb-1">状态: <span class="badge bg-${getStatusClass(log.status)}">${getStatusText(log.status)}</span></div>
+                        <div>时间: ${new Date(log.start_time).toLocaleString()}</div>
+                        <div>${log.success_count}成功 / ${log.failed_count}失败</div>
+                    `);
+                        }
+                    }
+                });
+
+                // 加载最近SPKW数据同步
+                $.ajax({
+                    url: '/api/v1/sync/logs/?sync_type=sp_kw_data&ordering=-created_at&limit=1',
+                    type: 'GET',
+                    success: function (data) {
+                        if (data.results && data.results.length > 0) {
+                            const log = data.results[0];
+                            $('#last-sp-kw-sync').html(`
+                        <div class="mb-1">状态: <span class="badge bg-${getStatusClass(log.status)}">${getStatusText(log.status)}</span></div>
+                        <div>时间: ${new Date(log.start_time).toLocaleString()}</div>
+                        <div>${log.success_count}成功 / ${log.failed_count}失败</div>
+                    `);
+                        }
+                    }
+                });
+
+                // 加载最近SPTarget数据同步
+                $.ajax({
+                    url: '/api/v1/sync/logs/?sync_type=sp_target_data&ordering=-created_at&limit=1',
+                    type: 'GET',
+                    success: function (data) {
+                        if (data.results && data.results.length > 0) {
+                            const log = data.results[0];
+                            $('#last-sp-target-sync').html(`
+                        <div class="mb-1">状态: <span class="badge bg-${getStatusClass(log.status)}">${getStatusText(log.status)}</span></div>
+                        <div>时间: ${new Date(log.start_time).toLocaleString()}</div>
+                        <div>${log.success_count}成功 / ${log.failed_count}失败</div>
+                    `);
+                        }
+                    }
+                });
+
+                // 加载最近SPPlacement数据同步
+                $.ajax({
+                    url: '/api/v1/sync/logs/?sync_type=sp_placement_data&ordering=-created_at&limit=1',
+                    type: 'GET',
+                    success: function (data) {
+                        if (data.results && data.results.length > 0) {
+                            const log = data.results[0];
+                            $('#last-sp-placement-sync').html(`
+                        <div class="mb-1">状态: <span class="badge bg-${getStatusClass(log.status)}">${getStatusText(log.status)}</span></div>
+                        <div>时间: ${new Date(log.start_time).toLocaleString()}</div>
+                        <div>${log.success_count}成功 / ${log.failed_count}失败</div>
+                    `);
+                        }
+                    }
+                });
+
+                // 加载最近SPST数据同步
+                $.ajax({
+                    url: '/api/v1/sync/logs/?sync_type=sp_search_terms_data&ordering=-created_at&limit=1',
+                    type: 'GET',
+                    success: function (data) {
+                        if (data.results && data.results.length > 0) {
+                            const log = data.results[0];
+                            $('#last-sp-search-terms-sync').html(`
+                        <div class="mb-1">状态: <span class="badge bg-${getStatusClass(log.status)}">${getStatusText(log.status)}</span></div>
+                        <div>时间: ${new Date(log.start_time).toLocaleString()}</div>
+                        <div>${log.success_count}成功 / ${log.failed_count}失败</div>
+                    `);
+                        }
+                    }
+                });
+
+                // 加载最近SBKW数据同步
+                $.ajax({
+                    url: '/api/v1/sync/logs/?sync_type=sb_kw_data&ordering=-created_at&limit=1',
+                    type: 'GET',
+                    success: function (data) {
+                        if (data.results && data.results.length > 0) {
+                            const log = data.results[0];
+                            $('#last-sb-kw-sync').html(`
+                        <div class="mb-1">状态: <span class="badge bg-${getStatusClass(log.status)}">${getStatusText(log.status)}</span></div>
+                        <div>时间: ${new Date(log.start_time).toLocaleString()}</div>
+                        <div>${log.success_count}成功 / ${log.failed_count}失败</div>
+                    `);
+                        }
+                    }
+                });
+
+                // 加载最近SBCampain数据同步
+                $.ajax({
+                    url: '/api/v1/sync/logs/?sync_type=sb_campaign_data&ordering=-created_at&limit=1',
+                    type: 'GET',
+                    success: function (data) {
+                        if (data.results && data.results.length > 0) {
+                            const log = data.results[0];
+                            $('#last-sb-campaign-sync').html(`
+                        <div class="mb-1">状态: <span class="badge bg-${getStatusClass(log.status)}">${getStatusText(log.status)}</span></div>
+                        <div>时间: ${new Date(log.start_time).toLocaleString()}</div>
+                        <div>${log.success_count}成功 / ${log.failed_count}失败</div>
+                    `);
+                        }
+                    }
+                });
+
+                // 加载最近SBCreative数据同步
+                $.ajax({
+                    url: '/api/v1/sync/logs/?sync_type=sb_creative_data&ordering=-created_at&limit=1',
+                    type: 'get',
+                    success: function (data) {
+                        if (data.results && data.results.length > 0) {
+                            const log = data.results[0];
+                            $('#last-sb-creative-sync').html(`
+                        <div class="mb-1">状态: <span class="badge bg-${getStatusClass(log.status)}">${getStatusText(log.status)}</span></div>
+                        <div>时间: ${new Date(log.start_time).toLocaleString()}</div>
+                        <div>${log.success_count}成功 / ${log.failed_count}失败</div>
+                    `);
+                        }
+                    }
+                })
+
+                // 加载最近SBTargeting数据同步
+                $.ajax({
+                    url: '/api/v1/sync/logs/?sync_type=sb_targeting_data&ordering=-created_at&limit=1',
+                    type: 'GET',
+                    success: function (data) {
+                        if (data.results && data.results.length > 0) {
+                            const log = data.results[0];
+                            $('#last-sb-targeting-sync').html(`
+                        <div class="mb-1">状态: <span class="badge bg-${getStatusClass(log.status)}">${getStatusText(log.status)}</span></div>
+                        <div>时间: ${new Date(log.start_time).toLocaleString()}</div>
+                        <div>${log.success_count}成功 / ${log.failed_count}失败</div>
+                    `);
+                        }
+                    }
+                });
+
+                // 加载最近SBPlacement数据同步
+                $.ajax({
+                    url: '/api/v1/sync/logs/?sync_type=sb_placement_data&ordering=-created_at&limit=1',
+                    type: 'GET',
+                    success: function (data) {
+                        if (data.results && data.results.length > 0) {
+                            const log = data.results[0];
+                            $('#last-sb-placement-sync').html(`
+                        <div class="mb-1">状态: <span class="badge bg-${getStatusClass(log.status)}">${getStatusText(log.status)}</span></div>
+                        <div>时间: ${new Date(log.start_time).toLocaleString()}</div>
+                        <div>${log.success_count}成功 / ${log.failed_count}失败</div>
+                    `);
+                        }
+                    }
+                });
+
+                // 加载最近SBSearchTerms数据同步
+                $.ajax({
+                    url: '/api/v1/sync/logs/?sync_type=sb_search_terms_data&ordering=-created_at&limit=1',
+                    type: 'GET',
+                    success: function (data) {
+                        if (data.results && data.results.length > 0) {
+                            const log = data.results[0];
+                            $('#last-sb-search-terms-sync').html(`
+                        <div class="mb-1">状态: <span class="badge bg-${getStatusClass(log.status)}">${getStatusText(log.status)}</span></div>
+                        <div>时间: ${new Date(log.start_time).toLocaleString()}</div>
+                        <div>${log.success_count}成功 / ${log.failed_count}失败</div>
+                    `);
+                        }
+                    }
+                });
+
+                // 加载最近SDCampaign数据同步
+                $.ajax({
+                    url: '/api/v1/sync/logs/?sync_type=sd_campaign_data&ordering=-created_at&limit=1',
+                    type: 'GET',
+                    success: function (data) {
+                        if (data.results && data.results.length > 0) {
+                            const log = data.results[0];
+                            $('#last-sd-campaign-sync').html(`
+                        <div class="mb-1">状态: <span class="badge bg-${getStatusClass(log.status)}">${getStatusText(log.status)}</span></div>
+                        <div>时间: ${new Date(log.start_time).toLocaleString()}</div>
+                        <div>${log.success_count}成功 / ${log.failed_count}失败</div>
+                    `);
+                        }
+                    }
+                });
+
+                // 加载最近SDProduct数据同步
+                $.ajax({
+                    url: '/api/v1/sync/logs/?sync_type=sd_product_data&ordering=-created_at&limit=1',
+                    type: 'GET',
+                    success: function (data) {
+                        if (data.results && data.results.length > 0) {
+                            const log = data.results[0];
+                            $('#last-sd-product-sync').html(`
+                    <div class="mb-1">状态: <span class="badge bg-${getStatusClass(log.status)}">${getStatusText(log.status)}</span></div>
+                    <div>时间: ${new Date(log.start_time).toLocaleString()}</div>
+                    <div>${log.success_count}成功 / ${log.failed_count}失败</div>
+                `);
+                        }
+                    }
+                });
+
+                // 加载最近库存分类账数据同步
+                $.ajax({
+                    url: '/api/v1/sync/logs/?sync_type=inventory_storage_ledger&ordering=-created_at&limit=1',
+                    type: 'GET',
+                    success: function (data) {
+                        if (data.results && data.results.length > 0) {
+                            const log = data.results[0];
+                            $('#last-inventory-storage-ledger-sync').html(`
+                        <div class="mb-1">状态: <span class="badge bg-${getStatusClass(log.status)}">${getStatusText(log.status)}</span></div>
+                        <div>时间: ${new Date(log.start_time).toLocaleString()}</div>
+                        <div>${log.success_count}成功 / ${log.failed_count}失败</div>
+                    `);
+                        }
+                    }
+                });
+
+                // 加载最近库存分类账明细数据同步
+                $.ajax({
+                    url: '/api/v1/sync/logs/?sync_type=inventory_storage_ledger_detail&ordering=-created_at&limit=1',
+                    type: 'GET',
+                    success: function (data) {
+                        if (data.results && data.results.length > 0) {
+                            const log = data.results[0];
+                            $('#last-inventory-storage-ledger-detail-sync').html(`
+                            <div class="mb-1">状态: <span class="badge bg-${getStatusClass(log.status)}">${getStatusText(log.status)}</span></div>
+                            <div>时间: ${new Date(log.start_time).toLocaleString()}</div>
+                            <div>${log.success_count}成功 / ${log.failed_count}失败</div>
+                        `);
+                        }
+                    }
+                });
+
+                // 加载最近流量分析数据同步
+                $.ajax({
+                    url: '/api/v1/sync/logs/?sync_type=traffic_analysis&ordering=-created_at&limit=1',
+                    type: 'GET',
+                    success: function (data) {
+                        if (data.results && data.results.length > 0) {
+                            const log = data.results[0];
+                            $('#last-traffic-analysis-sync').html(`
+                        <div class="mb-1">状态: <span class="badge bg-${getStatusClass(log.status)}">${getStatusText(log.status)}</span></div>
+                        <div>时间: ${new Date(log.start_time).toLocaleString()}</div>
+                        <div>${log.success_count}成功 / ${log.failed_count}失败</div>
+                    `);
+                        }
+                    }
+                });
+
+                // 加载最近完整FBA库存数据同步
+                $.ajax({
+                    url: '/api/v1/sync/logs/?sync_type=fba_inventory_full&ordering=-created_at&limit=1',
+                    type: 'GET',
+                    success: function (data) {
+                        if (data.results && data.results.length > 0) {
+                            const log = data.results[0];
+                            $('#last-fba-inventory-full-sync').html(`
+                <div class="mb-1">状态: <span class="badge bg-${getStatusClass(log.status)}">${getStatusText(log.status)}</span></div>
+                <div>时间: ${new Date(log.start_time).toLocaleString()}</div>
+                <div>${log.success_count}成功 / ${log.failed_count}失败</div>
+            `);
+                        }
+                    }
+                });
+
+                // 加载最近月度仓储费数据同步
+                $.ajax({
+                    url: '/api/v1/sync/logs/?sync_type=monthly_storage_fee&ordering=-created_at&limit=1',
+                    type: 'GET',
+                    success: function (data) {
+                        if (data.results && data.results.length > 0) {
+                            const log = data.results[0];
+                            $('#last-monthly-storage-fee-sync').html(`
+                        <div class="mb-1">状态: <span class="badge bg-${getStatusClass(log.status)}">${getStatusText(log.status)}</span></div>
+                        <div>时间: ${new Date(log.start_time).toLocaleString()}</div>
+                        <div>${log.success_count}成功 / ${log.failed_count}失败</div>
+                    `);
+                        }
+                    }
+                });
+                
+                // 加载最近利润分析数据同步
+                $.ajax({
+                    url: '/api/v1/sync/logs/?sync_type=profit_analysis&ordering=-created_at&limit=1',
+                    type: 'GET',
+                    success: function (data) {
+                        if (data.results && data.results.length > 0) {
+                            const log = data.results[0];
+                            $('#last-profit-analysis-sync').html(`
+                        <div class="mb-1">状态: <span class="badge bg-${getStatusClass(log.status)}">${getStatusText(log.status)}</span></div>
+                        <div>时间: ${new Date(log.start_time).toLocaleString()}</div>
+                        <div>${log.success_count}成功 / ${log.failed_count}失败</div>
+                    `);
+                        }
+                    }
+                });
+            }
+
+            // 获取同步类型文本
+            function getSyncTypeText(type) {
+                const typeTexts = {
+                    'products': '产品',
+                    'inventory': '库存',
+                    'marketplaces': '店铺',
+                    'sp_ad_data': 'SPAD数据',
+                    'sp_kw_data': 'SPKW数据',
+                    'sp_target_data': 'SPTarget数据',
+                    'sp_placement_data': 'SPPlacement数据',
+                    'sp_search_terms_data': 'SPST数据',
+                    'sb_kw_data': 'SBKW数据',
+                    'sb_campaign_data': 'SBCampain数据',
+                    'sb_targeting_data': 'SBTargeting数据',
+                    'sb_placement_data': 'SBPlacement数据',
+                    'sb_search_terms_data': 'SBSearchTerms数据',
+                    'sd_campaign_data': 'SDCampaign数据',
+                    'sd_product_data': 'SDProduct数据',
+                    'inventory_storage_ledger': '库存分类账数据',
+                    'inventory_storage_ledger_detail': '库存分类账明细数据',
+                    'transaction': '交易数据',
+                    'traffic_analysis': '流量分析数据',
+                    'fba_inventory_full': 'FBA完整库存数据',
+                    'monthly_storage_fee': '月度仓储费数据',
+                };
+                return typeTexts[type] || type;
+            }
+
+            // 获取状态样式类
+            function getStatusClass(status) {
+                const statusClasses = {
+                    'running': 'primary',
+                    'success': 'success',
+                    'failed': 'danger',
+                    'processing': 'info',
+                    'partial_success': 'warning'
+                };
+                return statusClasses[status] || 'secondary';
+            }
+
+            // 获取状态文本
+            function getStatusText(status) {
+                const statusTexts = {
+                    'running': '运行中',
+                    'success': '成功',
+                    'failed': '失败',
+                    'processing': '处理中',
+                    'partial_success': '部分成功'
+                };
+                return statusTexts[status] || status;
+            }
+
+            // 显示同步模态框
+            function showSyncModal(title) {
+                $('#sync-modal-label').text(title || '数据同步');
+                $('.progress-bar').css('width', '0%');
+                $('#sync-status-text').text('准备同步...');
+                $('#close-sync-modal').prop('disabled', true);
+                $('#sync-modal').modal('show');
+            }
+
+            // 显示错误详情
+            function showErrorDetails(logId) {
+                $.ajax({
+                    url: `/api/v1/sync/logs/${logId}/`,
+                    type: 'GET',
+                    success: function (log) {
+                        alert(`错误详情:\n${log.error_message || '无错误信息'}`);
+                    },
+                    error: function (xhr) {
+                        console.error('获取错误详情失败:', xhr);
+                        alert('获取错误详情失败');
+                    }
+                });
+            }
+
+            // 显示对应参数区域
+            function showParamsSection(type) {
+                // 隐藏所有参数区域和默认消息
+                $('.params-section').hide();
+                $('#default-message').hide();
+
+                // 显示对应参数区域
+                switch (type) {
+                    case 'products':
+                        $('#product-params').show();
+                        break;
+                    case 'inventory':
+                        $('#inventory-params').show();
+                        break;
+                    case 'marketplaces':
+                        $('#marketplaces-params').show();
+                        break;
+                    case 'sp_ad_data':
+                        $('#sp-ad-params').show();
+                        break;
+                    case 'sp_kw_data':
+                        $('#sp-kw-params').show();
+                        break;
+                    case 'sp_target_data':
+                        $('#sp-target-params').show();
+                        break;
+                    case 'sp_placement_data':
+                        $('#sp-placement-params').show();
+                        break;
+                    case 'sp_search_terms_data':
+                        $('#sp-search-terms-params').show();
+                        break;
+                    case 'sb_kw_data':
+                        $('#sb-kw-params').show();
+                        break;
+                    case 'sb_campaign_data':
+                        $('#sb-campaign-params').show();
+                        break;
+                    case 'sb_creative_data':
+                        $('#sb-creative-params').show();
+                        break;
+                    case 'sb_targeting_data':
+                        $('#sb-targeting-params').show();
+                        break;
+                    case 'sb_placement_data':
+                        $('#sb-placement-params').show();
+                        break;
+                    case 'sb_search_terms_data':
+                        $('#sb-search-terms-params').show();
+                        break;
+                    case 'sd_campaign_data':
+                        $('#sd-campaign-params').show();
+                        break;
+                    case 'sd_product_data':
+                        $('#sd-product-params').show();
+                        break;
+                    case 'inventory_storage_ledger':
+                        $('#inventory-storage-ledger-params').show();
+                        break;
+                    case 'inventory_storage_ledger_detail':
+                        $('#inventory-storage-ledger-detail-params').show();
+                        break;
+                    case 'transaction':
+                        $('#transaction-params').show();
+                        break;
+                    case 'traffic_analysis':
+                        $('#traffic-analysis-params').show();
+                        break;
+                    case 'fba_inventory_full':
+                        $('#fba-inventory-full-params').show();
+                        break;
+                    case 'monthly_storage_fee':
+                        $('#monthly-storage-fee-params').show();
+                        break;
+                    case 'profit_analysis':
+                        $('#profit-analysis-params').show();
+                        break;
+                }
+            }
+
+            // 页面加载完成后初始化
+            $(document).ready(function () {
+                // 加载同步状态和日志
+                loadSyncStatus();
+                loadSyncLogs();
+
+                // 同步产品按钮点击事件
+                $('#sync-products-btn').click(function () {
+                    console.log('点击同步产品按钮');
+                    showParamsSection('products');
+                });
+
+                // 确认同步产品数据
+                $('#confirm-product-sync').click(function () {
+                    syncData('products');
+                });
+
+                // 同步库存按钮点击事件
+                $('#sync-inventory-btn').click(function () {
+                    console.log('点击同步库存按钮');
+                    showParamsSection('inventory');
+                });
+
+                // 确认同步库存数据
+                $('#confirm-inventory-sync').click(function () {
+                    const beginDate = $('#begin-date').val();
+                    const endDate = $('#end-date').val();
+
+                    const params = {};
+                    if (beginDate) {
+                        params.start_date = beginDate + 'T00:00:00';
+                    }
+                    if (endDate) {
+                        params.end_date = endDate + 'T23:59:59';
+                    }
+
+                    syncData('inventory', params);
+                });
+
+                // 同步店铺按钮点击事件
+                $('#sync-marketplaces-btn').click(function () {
+                    console.log('点击同步店铺按钮');
+                    showParamsSection('marketplaces');
+                });
+
+                // 确认同步店铺信息
+                $('#confirm-marketplaces-sync').click(function () {
+                    syncData('marketplaces');
+                });
+
+                // 同步SPAD数据按钮点击事件
+                $('#sync-sp-ad-btn').click(function () {
+                    console.log('点击同步SPAD数据按钮');
+                    showParamsSection('sp_ad_data');
+                });
+
+                // 确认同步SPAD数据
+                $('#confirm-sp-ad-sync').click(function () {
+                    const startDate = $('#sp-ad-start-date').val();
+                    const endDate = $('#sp-ad-end-date').val();
+
+                    // 验证日期
+                    if (!startDate || !endDate) {
+                        alert('请选择开始日期和结束日期');
+                        return;
+                    }
+
+                    // 构建参数
+                    const params = {
+                        marketIds: [], // 默认市场ID，可以根据需要修改
+                        count: 100, // 默认每页100条
+                        nextId: null, // 初始next_id为空
+                        startDataDate: startDate,
+                        endDataDate: endDate
+                    };
+
+                    syncData('sp_ad_data', params);
+                });
+
+                // 同步SPKW数据按钮点击事件
+                $('#sync-sp-kw-btn').click(function () {
+                    console.log('点击同步SPKW数据按钮');
+                    showParamsSection('sp_kw_data');
+                });
+
+                // 确认同步SPKW数据
+                $('#confirm-sp-kw-sync').click(function () {
+                    const startDate = $('#sp-kw-start-date').val();
+                    const endDate = $('#sp-kw-end-date').val();
+
+                    // 验证日期
+                    if (!startDate || !endDate) {
+                        alert('请选择开始日期和结束日期');
+                        return;
+                    }
+
+                    // 构建参数
+                    const params = {
+                        marketIds: [], // 默认市场ID，可以根据需要修改
+                        count: 100, // 默认每页100条
+                        nextId: null, // 初始next_id为空
+                        startDataDate: startDate,
+                        endDataDate: endDate
+                    };
+
+                    syncData('sp_kw_data', params);
+                });
+
+                // 同步SPTarget数据按钮点击事件
+                $('#sync-sp-target-btn').click(function () {
+                    console.log('点击同步SPTarget数据按钮');
+                    showParamsSection('sp_target_data');
+                });
+
+                // 确认同步SPTarget数据
+                $('#confirm-sp-target-sync').click(function () {
+                    const startDate = $('#sp-target-start-date').val();
+                    const endDate = $('#sp-target-end-date').val();
+
+                    // 验证日期
+                    if (!startDate || !endDate) {
+                        alert('请选择开始日期和结束日期');
+                        return;
+                    }
+
+                    // 构建参数
+                    const params = {
+                        marketIds: [], // 默认市场ID，可以根据需要修改
+                        count: 100, // 默认每页100条
+                        nextId: null, // 初始next_id为空
+                        startDataDate: startDate,
+                        endDataDate: endDate
+                    };
+
+                    syncData('sp_target_data', params);
+                });
+
+                // 同步SPPlacement数据按钮点击事件
+                $('#sync-sp-placement-btn').click(function () {
+                    console.log('点击同步SPPlacement数据按钮');
+                    showParamsSection('sp_placement_data');
+                });
+
+                // 确认同步SPPlacement数据
+                $('#confirm-sp-placement-sync').click(function () {
+                    const startDate = $('#sp-placement-start-date').val();
+                    const endDate = $('#sp-placement-end-date').val();
+
+                    // 验证日期
+                    if (!startDate || !endDate) {
+                        alert('请选择开始日期和结束日期');
+                        return;
+                    }
+
+                    // 构建参数
+                    const params = {
+                        marketIds: [], // 默认市场ID，可以根据需要修改
+                        count: 100, // 默认每页100条
+                        nextId: null, // 初始next_id为空
+                        startDataDate: startDate,
+                        endDataDate: endDate
+                    };
+
+                    syncData('sp_placement_data', params);
+                });
+
+                // 同步SPST数据按钮点击事件
+                $('#sync-sp-search-terms-btn').click(function () {
+                    console.log('点击同步SPST数据按钮');
+                    showParamsSection('sp_search_terms_data');
+                });
+
+                // 确认同步SPST数据
+                $('#confirm-sp-search-terms-sync').click(function () {
+                    const startDate = $('#sp-search-terms-start-date').val();
+                    const endDate = $('#sp-search-terms-end-date').val();
+
+                    // 验证日期
+                    if (!startDate || !endDate) {
+                        alert('请选择开始日期和结束日期');
+                        return;
+                    }
+
+                    // 构建参数
+                    const params = {
+                        marketIds: [], // 默认市场ID，可以根据需要修改
+                        count: 100, // 默认每页100条
+                        nextId: null, // 初始next_id为空
+                        startDataDate: startDate,
+                        endDataDate: endDate
+                    };
+
+                    syncData('sp_search_terms_data', params);
+                });
+
+                // 同步SBKW数据按钮点击事件
+                $('#sync-sb-kw-btn').click(function () {
+                    console.log('点击同步SBKW数据按钮');
+                    showParamsSection('sb_kw_data');
+                });
+
+                // 确认同步SBKW数据
+                $('#confirm-sb-kw-sync').click(function () {
+                    const startDate = $('#sb-kw-start-date').val();
+                    const endDate = $('#sb-kw-end-date').val();
+
+                    // 验证日期
+                    if (!startDate || !endDate) {
+                        alert('请选择开始日期和结束日期');
+                        return;
+                    }
+
+                    // 构建参数
+                    const params = {
+                        marketIds: [], // 默认市场ID，可以根据需要修改
+                        count: 100, // 默认每页100条
+                        nextId: null, // 初始next_id为空
+                        startDataDate: startDate,
+                        endDataDate: endDate
+                    };
+
+                    syncData('sb_kw_data', params);
+                });
+
+                // 同步SBCampain数据按钮点击事件
+                $('#sync-sb-campaign-btn').click(function () {
+                    console.log('点击同步SBCampain数据按钮');
+                    showParamsSection('sb_campaign_data');
+                });
+
+                // 确认同步SBCampain数据
+                $('#confirm-sb-campaign-sync').click(function () {
+                    const startDate = $('#sb-campaign-start-date').val();
+                    const endDate = $('#sb-campaign-end-date').val();
+
+                    // 验证日期
+                    if (!startDate || !endDate) {
+                        alert('请选择开始日期和结束日期');
+                        return;
+                    }
+
+                    // 构建参数
+                    const params = {
+                        marketIds: [], // 默认市场ID，可以根据需要修改
+                        count: 100, // 默认每页100条
+                        nextId: null, // 初始next_id为空
+                        startDataDate: startDate,
+                        endDataDate: endDate
+                    };
+
+                    syncData('sb_campaign_data', params);
+                });
+
+                // 同步库存分类账明细数据按钮点击事件
+                $('#sync-inventory-storage-ledger-detail-btn').click(function () {
+                    console.log('点击同步库存分类账明细数据按钮');
+                    showParamsSection('inventory_storage_ledger_detail');
+                });
+
+                // 确认同步库存分类账明细数据
+                $('#confirm-inventory-storage-ledger-detail-sync').click(function () {
+                    const beginDate = $('#inventory-storage-ledger-detail-start-date').val();
+                    const endDate = $('#inventory-storage-ledger-detail-end-date').val();
+
+                    // 验证日期
+                    if (!beginDate || !endDate) {
+                        alert('请选择开始日期和结束日期');
+                        return;
+                    }
+
+                    // 构建参数
+                    const params = {
+                        beginReportDate: beginDate,
+                        endReportDate: endDate,
+                        page: 1,
+                        pagesize: 100
+                    };
+
+                    syncData('inventory_storage_ledger_detail', params);
+                });
+
+
+                // 同步SPCreative数据按钮点击事件
+                $('#sync-sb-creative-btn').click(function () {
+                    console.log('点击同步SPCreative数据按钮');
+                    showParamsSection('sb_creative_data');
+                });
+
+                // 确认同步SPCreative数据
+                $('#confirm-sb-creative-sync').click(function () {
+                    const startDate = $('#sb-creative-start-date').val();
+                    const endDate = $('#sb-creative-end-date').val();
+
+                    // 验证日期
+                    if (!startDate || !endDate) {
+                        alert('请选择开始日期和结束日期');
+                        return;
+                    }
+
+                    // 构建参数
+                    const params = {
+                        marketIds: [], // 默认市场ID，可以根据需要修改
+                        count: 100, // 默认每页100条
+                        nextId: null, // 初始next_id为空
+                        startDataDate: startDate,
+                        endDataDate: endDate
+                    };
+
+                    syncData('sb_creative_data', params);
+                });
+
+                // 同步SBTargeting数据按钮点击事件
+                $('#sync-sb-targeting-btn').click(function () {
+                    console.log('点击同步SBTargeting数据按钮');
+                    showParamsSection('sb_targeting_data');
+                });
+
+                // 确认同步SBTargeting数据
+                $('#confirm-sb-targeting-sync').click(function () {
+                    const startDate = $('#sb-targeting-start-date').val();
+                    const endDate = $('#sb-targeting-end-date').val();
+
+                    // 验证日期
+                    if (!startDate || !endDate) {
+                        alert('请选择开始日期和结束日期');
+                        return;
+                    }
+
+                    // 构建参数
+                    const params = {
+                        marketIds: [], // 默认市场ID，可以根据需要修改
+                        count: 100, // 默认每页100条
+                        nextId: null, // 初始next_id为空
+                        startDataDate: startDate,
+                        endDataDate: endDate
+                    };
+
+                    syncData('sb_targeting_data', params);
+                });
+
+                // 同步SBPlacement数据按钮点击事件
+                $('#sync-sb-placement-btn').click(function () {
+                    console.log('点击同步SBPlacement数据按钮');
+                    showParamsSection('sb_placement_data');
+                });
+
+                // 确认同步SBPlacement数据
+                $('#confirm-sb-placement-sync').click(function () {
+                    const startDate = $('#sb-placement-start-date').val();
+                    const endDate = $('#sb-placement-end-date').val();
+
+                    // 验证日期
+                    if (!startDate || !endDate) {
+                        alert('请选择开始日期和结束日期');
+                        return;
+                    }
+
+                    // 构建参数
+                    const params = {
+                        marketIds: [], // 默认市场ID，可以根据需要修改
+                        count: 100, // 默认每页100条
+                        nextId: null, // 初始next_id为空
+                        startDataDate: startDate,
+                        endDataDate: endDate
+                    };
+
+                    syncData('sb_placement_data', params);
+                });
+
+                // 同步SBSearchTerms数据按钮点击事件
+                $('#sync-sb-search-terms-btn').click(function () {
+                    console.log('点击同步SBSearchTerms数据按钮');
+                    showParamsSection('sb_search_terms_data');
+                });
+
+                // 确认同步SBSearchTerms数据
+                $('#confirm-sb-search-terms-sync').click(function () {
+                    const startDate = $('#sb-search-terms-start-date').val();
+                    const endDate = $('#sb-search-terms-end-date').val();
+
+                    // 验证日期
+                    if (!startDate || !endDate) {
+                        alert('请选择开始日期和结束日期');
+                        return;
+                    }
+
+                    // 构建参数
+                    const params = {
+                        marketIds: [], // 默认市场ID，可以根据需要修改
+                        count: 100, // 默认每页100条
+                        nextId: null, // 初始next_id为空
+                        startDataDate: startDate,
+                        endDataDate: endDate
+                    };
+
+                    syncData('sb_search_terms_data', params);
+                }
+
+                );
+
+                // 同步SDCampaign数据按钮点击事件
+                $('#sync-sd-campaign-btn').click(function () {
+                    console.log('点击同步SDCampaign数据按钮');
+                    showParamsSection('sd_campaign_data');
+                });
+
+                // 确认同步SDCampaign数据
+                $('#confirm-sd-campaign-sync').click(function () {
+                    const startDate = $('#sd-campaign-start-date').val();
+                    const endDate = $('#sd-campaign-end-date').val();
+
+                    // 验证日期
+                    if (!startDate || !endDate) {
+                        alert('请选择开始日期和结束日期');
+                        return;
+                    }
+
+                    // 构建参数
+                    const params = {
+                        marketIds: [], // 默认市场ID，可以根据需要修改
+                        count: 100, // 默认每页100条
+                        nextId: null, // 初始next_id为空
+                        startDataDate: startDate,
+                        endDataDate: endDate
+                    };
+
+                    syncData('sd_campaign_data', params);
+                });
+
+                // 同步SDProduct数据按钮点击事件
+                $('#sync-sd-product-btn').click(function () {
+                    console.log('点击同步SDProduct数据按钮');
+                    showParamsSection('sd_product_data');
+                });
+
+                // 确认同步SDProduct数据
+                $('#confirm-sd-product-sync').click(function () {
+                    const startDate = $('#sd-product-start-date').val();
+                    const endDate = $('#sd-product-end-date').val();
+
+                    // 验证日期
+                    if (!startDate || !endDate) {
+                        alert('请选择开始日期和结束日期');
+                        return;
+                    }
+
+                    // 构建参数
+                    const params = {
+                        marketIds: [], // 默认市场ID，可以根据需要修改
+                        count: 100, // 默认每页100条
+                        nextId: null, // 初始next_id为空
+                        startDataDate: startDate,
+                        endDataDate: endDate
+                    };
+
+                    syncData('sd_product_data', params);
+                });
+
+                // 同步库存分类账数据按钮点击事件
+                $('#sync-inventory-storage-ledger-btn').click(function () {
+                    console.log('点击同步库存分类账数据按钮');
+                    showParamsSection('inventory_storage_ledger');
+                });
+
+                // 确认同步库存分类账数据
+                $('#confirm-inventory-storage-ledger-sync').click(function () {
+                    const startDate = $('#inventory-storage-ledger-start-date').val();
+                    const endDate = $('#inventory-storage-ledger-end-date').val();
+
+                    // 验证日期
+                    if (!startDate || !endDate) {
+                        alert('请选择开始日期和结束日期');
+                        return;
+                    }
+
+                    // 构建参数
+                    const params = {
+                        reportStartDate: startDate,
+                        reportEndDate: endDate,
+                        page: 1,
+                        pageSize: 100
+                    };
+
+                    syncData('inventory_storage_ledger', params);
+                });
+
+                // 同步库存分类账明细数据按钮点击事件
+                $('#sync-inventory-storage-ledger-detail-btn').click(function () {
+                    console.log('点击同步库存分类账明细数据按钮');
+                    showParamsSection('inventory_storage_ledger_detail');
+                });
+
+                // 确认同步库存分类账明细数据
+                $('#confirm-inventory-storage-ledger-detail-sync').click(function () {
+                    const startDate = $('#inventory-storage-ledger-detail-start-date').val();
+                    const endDate = $('#inventory-storage-ledger-detail-end-date').val();
+
+                    // 验证日期
+                    if (!startDate || !endDate) {
+                        alert('请选择开始日期和结束日期');
+                        return;
+                    }
+
+                    // 构建参数
+                    const params = {
+                        reportStartDate: startDate,
+                        reportEndDate: endDate,
+                        page: 1,
+                        pageSize: 100
+                    };
+
+                    syncData('inventory_storage_ledger_detail', params);
+                });
+
+                // 同步交易数据按钮点击事件
+                $('#sync-transaction-btn').click(function () {
+                    console.log('点击同步交易数据按钮');
+                    showParamsSection('transaction');
+                });
+
+                // 确认同步交易数据
+                $('#confirm-transaction-sync').click(function () {
+                    const startDate = $('#transaction-start-date').val();
+                    const endDate = $('#transaction-end-date').val();
+
+                    // 验证日期
+                    if (!startDate || !endDate) {
+                        alert('请选择开始日期和结束日期');
+                        return;
+                    }
+
+                    // 构建参数
+                    const params = {
+                        purchaseStartDate: startDate,
+                        purchaseEndDate: endDate,
+                        page: 1,
+                        pagesize: 100,
+                        delete_old_data: true,
+                        queryDateType: 0
+                    };
+
+                    syncData('transaction', params);
+                });
+
+                // 同步流量分析数据按钮点击事件
+                $('#sync-traffic-analysis-btn').click(function () {
+                    console.log('点击同步流量分析数据按钮');
+                    showParamsSection('traffic_analysis');
+                });
+
+                // 确认同步流量分析数据
+                $('#confirm-traffic-analysis-sync').click(function () {
+                    const startDate = $('#traffic-analysis-start-date').val();
+                    const endDate = $('#traffic-analysis-end-date').val();
+
+                    // 验证日期
+                    if (!startDate || !endDate) {
+                        alert('请选择开始日期和结束日期');
+                        return;
+                    }
+
+                    // 构建参数
+                    const params = {
+                        beginDate: startDate,
+                        endDate: endDate,
+                        page: 1,
+                        pageSize: 100,
+                        viewType: 'day'
+                    };
+
+                    syncData('traffic_analysis', params);
+                });
+
+                // 完整FBA库存同步按钮点击事件
+                $('#sync-fba-inventory-full-btn').click(function () {
+                    console.log('点击同步完整FBA库存数据按钮');
+                    showParamsSection('fba_inventory_full');
+                });
+
+                // 确认同步完整FBA库存数据
+                $('#confirm-fba-inventory-full-sync').click(function () {
+                    // 构建参数对象
+                    const params = {
+                        page: 1,
+                        pagesize: 100
+                    };
+
+                    // 开始同步
+                    syncData('fba_inventory_full', params);
+                });
+
+                // 月度仓储费按钮点击事件
+                $('#sync-monthly-storage-fee-btn').click(function () {
+                    console.log('点击同步月度仓储费数据按钮');
+                    showParamsSection('monthly_storage_fee');
+                });
+
+                // 确认同步月度仓储费
+                $('#confirm-monthly-storage-fee-sync').click(function () {
+                    const year = $('#monthly-storage-fee-month').val().substring(0, 4);
+                    const month = $('#monthly-storage-fee-month').val().substring(5, 7);
+
+                    // 验证日期
+                    if (!year || !month) {
+                        alert('请选择年和月');
+                        return;
+                    }
+
+                    // 构建参数
+                    const params = {
+                        year: year,
+                        month: month,
+                        page: 1,
+                        pagesize: 100
+                    };
+
+                    syncData('monthly_storage_fee', params);
+                });
+                
+                // 同步利润分析数据按钮点击事件
+                $('#sync-profit-analysis-btn').click(function () {
+                    console.log('点击同步利润分析数据按钮');
+                    showParamsSection('profit_analysis');
+                });
+
+                // 确认同步利润分析数据
+                $('#confirm-profit-analysis-sync').click(function () {
+                    const startDate = $('#profit-analysis-start-date').val();
+                    const endDate = $('#profit-analysis-end-date').val();
+
+                    // 验证日期
+                    if (!startDate || !endDate) {
+                        alert('请选择开始日期和结束日期');
+                        return;
+                    }
+
+                    // 构建参数
+                    const params = {
+                        beginDate: startDate,
+                        endDate: endDate,
+                        page: 1,
+                        pagesize: 100,
+                        type: 'MSKU',
+                        showCurrencyType: 'YUAN'
+                    };
+
+                    syncData('profit_analysis', params);
+                });
+            });
+
+        </script>
+        {% endblock %}

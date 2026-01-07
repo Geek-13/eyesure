@@ -1,0 +1,95 @@
+{% extends 'base.html' %}
+
+{% block title %}配置文件 - 亚马逊广告数据分析平台{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-lg-12">
+        <div class="card">
+            <div class="card-header">
+                <div class="row">
+                    <div class="col-md-6">
+                        <h4 class="card-title">亚马逊广告配置文件</h4>
+                    </div>
+                    <div class="col-md-6 text-end">
+                        <button id="refreshProfilesBtn" class="btn btn-primary"><i class="fa fa-refresh"></i> 刷新配置文件</button>
+                    </div>
+                </div>
+            </div>
+            <div class="card-body">
+                <table class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th>配置文件ID</th>
+                            <th>配置文件名称</th>
+                            <th>国家代码</th>
+                            <th>市场ID</th>
+                            <th>是否默认</th>
+                            <th>更新时间</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for profile in profiles %}
+                        <tr>
+                            <td>{{ profile.profile_id }}</td>
+                            <td>{{ profile.profile_name }}</td>
+                            <td>{{ profile.country_code }}</td>
+                            <td>{{ profile.marketplace_string_id }}</td>
+                            <td>
+                                {% if profile.is_default %}
+                                <span class="badge bg-success">是</span>
+                                {% else %}
+                                <span class="badge bg-secondary">否</span>
+                                {% endif %}
+                            </td>
+                            <td>{{ profile.updated_at|date:"Y-m-d H:i" }}</td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="6" class="text-center">暂无配置文件数据</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    document.getElementById('refreshProfilesBtn').addEventListener('click', function() {
+        // 显示加载状态
+        this.innerHTML = '<i class="fa fa-spinner fa-spin"></i> 刷新中...';
+        this.disabled = true;
+        
+        // 发送POST请求刷新配置文件
+        fetch("{% url 'profiles' %}", {
+            method: 'POST',
+            headers: {
+                'X-CSRFToken': '{{ csrf_token }}',
+            },
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.status === 'success') {
+                alert('配置文件刷新成功！');
+                // 刷新页面
+                window.location.reload();
+            } else {
+                alert('配置文件刷新失败：' + data.message);
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('配置文件刷新失败，网络错误！');
+        })
+        .finally(() => {
+            // 恢复按钮状态
+            this.innerHTML = '<i class="fa fa-refresh"></i> 刷新配置文件';
+            this.disabled = false;
+        });
+    });
+</script>
+{% endblock %}

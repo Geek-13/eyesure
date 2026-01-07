@@ -1,0 +1,518 @@
+{% extends 'base/base.html' %}
+
+{% block title %}销售预估 - DataPilot Gerpgo 集成平台{% endblock %}
+
+{% block content_title %}销售预估分析{% endblock %}
+
+{% block styles %}
+
+{% endblock %}
+
+{% block content %}
+<div class="row">
+    <!-- 左侧控制面板 -->
+    <div class="col-md-4">
+        <div class="card mb-4">
+            <div class="card-header">
+                <i class="fa fa-sliders mr-2"></i>预测参数设置
+            </div>
+            <div class="card-body">
+                <form id="forecast-form">
+                    <div class="form-group mb-3">
+                        <label for="market">选择市场</label>
+                        <select id="market" class="form-select" required>
+                            <option value="">-- 请选择市场 --</option>
+                            <option value="US">美国 (US)</option>
+                            <option value="UK">英国 (UK)</option>
+                            <option value="DE">德国 (DE)</option>
+                            <option value="FR">法国 (FR)</option>
+                            <option value="IT">意大利 (IT)</option>
+                            <option value="ES">西班牙 (ES)</option>
+                            <option value="CA">加拿大 (CA)</option>
+                            <option value="JP">日本 (JP)</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group mb-3">
+                        <label for="asin">选择产品 (ASIN)</label>
+                        <select id="asin" class="form-select" required>
+                            <option value="">-- 请先选择市场 --</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group mb-3">
+                        <label for="forecast-method">预测算法</label>
+                        <select id="forecast-method" class="form-select" required>
+                            <option value="moving_average">移动平均法</option>
+                            <option value="linear_regression">线性回归法</option>
+                            <option value="seasonal">季节性预测</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group mb-3">
+                        <label for="history-months">历史数据月份数</label>
+                        <input type="number" id="history-months" class="form-control" min="3" max="36" value="6" required>
+                    </div>
+                    
+                    <div class="form-group mb-3">
+                        <label for="forecast-months">预测未来月份数</label>
+                        <input type="number" id="forecast-months" class="form-control" min="1" max="12" value="6" required>
+                    </div>
+                    
+                    <div class="form-group mb-3">
+                        <label>
+                            <input type="checkbox" id="include-inventory" checked>
+                            考虑当前库存水平
+                        </label>
+                    </div>
+                    
+                    <button type="submit" id="generate-forecast-btn" class="btn btn-primary w-100">
+                        <i class="fa fa-bar-chart mr-2"></i>生成销售预估
+                    </button>
+                    
+                    <div id="loading-spinner" class="text-center mt-3">
+                        <div class="spinner-border" role="status">
+                            <span class="visually-hidden">加载中...</span>
+                        </div>
+                        <p class="mt-2">正在生成销售预估，请稍候...</p>
+                    </div>
+                </form>
+            </div>
+        </div>
+        
+        <!-- 当前库存信息卡片 -->
+        <div class="card mb-4 forecast-result">
+            <div class="card-header">
+                <i class="fa fa-cubes mr-2"></i>当前库存信息
+            </div>
+            <div class="card-body">
+                <div class="form-group mb-2">
+                    <label class="text-muted">可售库存:</label>
+                    <span id="available-stock" class="font-weight-bold"></span>
+                </div>
+                <div class="form-group mb-2">
+                    <label class="text-muted">预留库存:</label>
+                    <span id="reserved-stock" class="font-weight-bold"></span>
+                </div>
+                <div class="form-group mb-2">
+                    <label class="text-muted">总库存:</label>
+                    <span id="total-stock" class="font-weight-bold"></span>
+                </div>
+                <div class="form-group mb-2">
+                    <label class="text-muted">库存周转天数:</label>
+                    <span id="stock-turnover" class="font-weight-bold"></span>
+                </div>
+                <div class="form-group">
+                    <label class="text-muted">预计库存耗尽时间:</label>
+                    <span id="stock-out-date" class="font-weight-bold"></span>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- 右侧结果展示区 -->
+    <div class="col-md-8">
+        <!-- 预测概览卡片 -->
+        <div class="card mb-4 forecast-result">
+            <div class="card-header">
+                <i class="fa fa-dashboard mr-2"></i>预测概览
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-3">
+                        <div class="form-group mb-2">
+                            <label class="text-muted">产品名称:</label>
+                            <p id="product-name" class="font-weight-bold"></p>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="form-group mb-2">
+                            <label class="text-muted">ASIN:</label>
+                            <p id="product-asin" class="font-weight-bold"></p>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="form-group mb-2">
+                            <label class="text-muted">市场:</label>
+                            <p id="product-market" class="font-weight-bold"></p>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="form-group mb-2">
+                            <label class="text-muted">平均月销量:</label>
+                            <p id="avg-monthly-sales" class="font-weight-bold"></p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="row mt-2">
+                    <div class="col-md-3">
+                        <div class="form-group mb-2">
+                            <label class="text-muted">使用算法:</label>
+                            <p id="algorithm-used" class="font-weight-bold"></p>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="form-group mb-2">
+                            <label class="text-muted">历史数据:</label>
+                            <p id="history-data-range" class="font-weight-bold"></p>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="form-group mb-2">
+                            <label class="text-muted">预测开始日期:</label>
+                            <p id="forecast-start-date" class="font-weight-bold"></p>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="form-group mb-2">
+                            <label class="text-muted">生成时间:</label>
+                            <p id="forecast-generated-time" class="font-weight-bold"></p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 销售预测图表 -->
+        <div class="card mb-4 forecast-result">
+            <div class="card-header">
+                <i class="fa fa-line-chart mr-2"></i>销售预测趋势图
+            </div>
+            <div class="card-body">
+                <div class="chart-container">
+                    <canvas id="forecast-chart"></canvas>
+                </div>
+                
+                <div class="export-buttons">
+                    <button id="export-chart-btn" class="btn btn-outline-secondary btn-sm">
+                        <i class="fa fa-download mr-1"></i>导出图表
+                    </button>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 月度预测表格 -->
+        <div class="card mb-4 forecast-result">
+            <div class="card-header">
+                <i class="fa fa-table mr-2"></i>月度销售预测详情
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-bordered monthly-forecast-table">
+                        <thead>
+                            <tr>
+                                <th>月份</th>
+                                <th>预测销量</th>
+                                <th>累计销量</th>
+                                <th>预计库存</th>
+                                <th>建议补货量</th>
+                            </tr>
+                        </thead>
+                        <tbody id="monthly-forecast-body">
+                            <!-- 表格数据将由JavaScript动态生成 -->
+                        </tbody>
+                    </table>
+                </div>
+                
+                <div class="export-buttons">
+                    <button id="export-excel-btn" class="btn btn-outline-secondary btn-sm">
+                        <i class="fa fa-file-excel-o mr-1"></i>导出Excel
+                    </button>
+                    <button id="export-pdf-btn" class="btn btn-outline-secondary btn-sm">
+                        <i class="fa fa-file-pdf-o mr-1"></i>导出PDF
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}
+
+{% block scripts %}
+<!-- Chart.js -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<script>
+    // 全局变量
+    let forecastChart = null;
+    let availableProducts = {};
+    
+    // 初始化页面
+    $(document).ready(function() {
+        // 市场选择变化时加载对应ASIN
+        $('#market').change(function() {
+            const market = $(this).val();
+            $('#asin').html('<option value="">-- 请选择产品 --</option>');
+            
+            if (market) {
+                loadProductsByMarket(market);
+            }
+        });
+        
+        // 表单提交事件
+        $('#forecast-form').submit(function(e) {
+            e.preventDefault();
+            generateSalesForecast();
+        });
+        
+        // 导出按钮事件
+        $('#export-chart-btn').click(exportChart);
+    });
+    
+    // 根据市场加载产品
+    function loadProductsByMarket(market) {
+        $.ajax({
+            url: `/api/v1/products/get-products?market_id=${market}`,
+            type: 'GET',
+            dataType: 'json',
+            success: function(response) {
+                if (response.success) {
+                    const products = response.data.products || [];
+                    const asinSelect = $('#asin');
+                    
+                    availableProducts[market] = {};
+                    
+                    products.forEach(product => {
+                        asinSelect.append(`<option value="${product.asin}">${product.asin} - ${product.product_name}</option>`);
+                        availableProducts[market][product.asin] = product.product_name;
+                    });
+                }
+            },
+            error: function() {
+                alert('加载产品列表失败');
+            }
+        });
+    }
+    
+    // 生成销售预估
+    function generateSalesForecast() {
+        // 显示加载状态
+        $('#generate-forecast-btn').prop('disabled', true);
+        $('#loading-spinner').show();
+        
+        // 获取表单数据
+        const market = $('#market').val();
+        const asin = $('#asin').val();
+        const forecastMethod = $('#forecast-method').val();
+        const historyMonths = $('#history-months').val();
+        const forecastMonths = $('#forecast-months').val();
+        const includeInventory = $('#include-inventory').is(':checked');
+        
+        // 准备请求数据
+        const requestData = {
+            market_id: market,
+            asin: asin,
+            forecast_method: forecastMethod,
+            history_months: parseInt(historyMonths),
+            forecast_months: parseInt(forecastMonths),
+            include_inventory: includeInventory
+        };
+        
+        // 发送请求
+        $.ajax({
+            url: '/api/v1/sales/generate-forecasts/',
+            type: 'POST',
+            contentType: 'application/json',
+            data: JSON.stringify(requestData),
+            success: function(response) {
+                if (response.success) {
+                    displayForecastResults(response.data);
+                    alert('销售预估生成成功！');
+                } else {
+                    alert('生成销售预估失败: ' + (response.error || '未知错误'));
+                }
+            },
+            error: function(xhr) {
+                let errorMessage = '生成销售预估时发生网络错误';
+                alert(errorMessage);
+            },
+            complete: function() {
+                // 隐藏加载状态
+                $('#generate-forecast-btn').prop('disabled', false);
+                $('#loading-spinner').hide();
+            }
+        });
+    }
+    
+    // 显示预测结果
+    function displayForecastResults(data) {
+        // 显示结果区域
+        $('.forecast-result').show();
+        
+        // 填充概览信息
+        const marketText = $('#market option:selected').text();
+        const productName = availableProducts[data.market_id]?.[data.asin] || '未知产品';
+        
+        $('#product-name').text(productName);
+        $('#product-asin').text(data.asin);
+        $('#product-market').text(marketText);
+        $('#avg-monthly-sales').text(data.avg_monthly_sales.toFixed(2));
+        
+        const methodNames = {
+            'moving_average': '移动平均法',
+            'linear_regression': '线性回归法',
+            'seasonal': '季节性预测'
+        };
+        
+        $('#algorithm-used').text(methodNames[data.forecast_method] || data.forecast_method);
+        $('#history-data-range').text(data.history_date_range);
+        $('#forecast-start-date').text(data.forecast_start_date);
+        $('#forecast-generated-time').text(data.generated_time);
+        
+        // 填充库存信息
+        if (data.current_inventory) {
+            $('#available-stock').text(data.current_inventory.available_stock);
+            $('#reserved-stock').text(data.current_inventory.reserved_stock);
+            $('#total-stock').text(data.current_inventory.total_stock);
+            $('#stock-turnover').text(data.current_inventory.stock_turnover_days.toFixed(1) + ' 天');
+            $('#stock-out-date').text(data.current_inventory.stock_out_date || '未预测到');
+        }
+        
+        // 绘制图表
+        drawForecastChart(data);
+        
+        // 填充月度预测表格
+        fillMonthlyForecastTable(data.monthly_forecasts);
+    }
+    
+    // 绘制预测图表
+    function drawForecastChart(data) {
+        const ctx = document.getElementById('forecast-chart').getContext('2d');
+        
+        // 销毁现有图表
+        if (forecastChart) {
+            forecastChart.destroy();
+        }
+        
+        // 准备数据
+        const labels = [...data.historical_data.map(item => item.month), ...data.monthly_forecasts.map(item => item.month)];
+        const historicalSales = [...data.historical_data.map(item => item.sales), ...new Array(data.monthly_forecasts.length).fill(null)];
+        const forecastSales = [...new Array(data.historical_data.length).fill(null), ...data.monthly_forecasts.map(item => item.forecasted_sales)];
+        const inventoryData = [...new Array(data.historical_data.length).fill(null), ...data.monthly_forecasts.map(item => item.expected_inventory)];
+        
+        // 创建图表
+        forecastChart = new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: labels,
+                datasets: [
+                    {
+                        label: '历史销量',
+                        data: historicalSales,
+                        borderColor: 'rgb(54, 162, 235)',
+                        backgroundColor: 'rgba(54, 162, 235, 0.1)',
+                        borderWidth: 2,
+                        fill: false,
+                        tension: 0.1
+                    },
+                    {
+                        label: '预测销量',
+                        data: forecastSales,
+                        borderColor: 'rgb(75, 192, 192)',
+                        backgroundColor: 'rgba(75, 192, 192, 0.1)',
+                        borderWidth: 2,
+                        borderDash: [5, 5],
+                        fill: false,
+                        tension: 0.1
+                    },
+                    {
+                        label: '预计库存',
+                        data: inventoryData,
+                        borderColor: 'rgb(255, 99, 132)',
+                        backgroundColor: 'rgba(255, 99, 132, 0.1)',
+                        borderWidth: 2,
+                        fill: false,
+                        tension: 0.1,
+                        yAxisID: 'y1'
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                interaction: {
+                    mode: 'index',
+                    intersect: false,
+                },
+                plugins: {
+                    title: {
+                        display: true,
+                        text: '销售趋势与预测',
+                        font: {
+                            size: 16
+                        }
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        title: {
+                            display: true,
+                            text: '销量'
+                        }
+                    },
+                    y1: {
+                        beginAtZero: true,
+                        position: 'right',
+                        title: {
+                            display: true,
+                            text: '库存'
+                        },
+                        grid: {
+                            drawOnChartArea: false,
+                        },
+                    }
+                }
+            }
+        });
+    }
+    
+    // 填充月度预测表格
+    function fillMonthlyForecastTable(forecasts) {
+        const tbody = $('#monthly-forecast-body');
+        tbody.empty();
+        
+        let cumulativeSales = 0;
+        
+        forecasts.forEach((forecast, index) => {
+            cumulativeSales += forecast.forecasted_sales;
+            
+            const row = $('<tr></tr>');
+            
+            // 检查库存是否即将耗尽
+            const isLowStock = forecast.expected_inventory <= 0 && index > 0;
+            const rowClass = isLowStock ? 'highlight' : '';
+            row.addClass(rowClass);
+            
+            row.append(`<td>${forecast.month}</td>`);
+            row.append(`<td>${forecast.forecasted_sales.toFixed(0)}</td>`);
+            row.append(`<td>${cumulativeSales.toFixed(0)}</td>`);
+            
+            const inventoryCell = forecast.expected_inventory < 0 ? 
+                `<td class="text-danger font-weight-bold">缺货</td>` : 
+                `<td>${forecast.expected_inventory.toFixed(0)}</td>`;
+            row.append(inventoryCell);
+            
+            const suggestedReorder = forecast.suggested_reorder_quantity || 0;
+            const reorderCell = suggestedReorder > 0 ? 
+                `<td class="text-warning font-weight-bold">${suggestedReorder.toFixed(0)}</td>` : 
+                `<td>${suggestedReorder.toFixed(0)}</td>`;
+            row.append(reorderCell);
+            
+            tbody.append(row);
+        });
+    }
+    
+    // 导出图表
+    function exportChart() {
+        if (forecastChart) {
+            const link = document.createElement('a');
+            link.download = 'sales_forecast_chart.png';
+            link.href = forecastChart.toBase64Image();
+            link.click();
+        }
+    }
+</script>
+{% endblock %}

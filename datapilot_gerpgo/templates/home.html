@@ -1,0 +1,256 @@
+{% extends 'base/base.html' %}
+
+{% block title %}首页 - DataPilot Gerpgo 集成平台{% endblock %}
+
+{% block content_title %}数据概览{% endblock %}
+
+{% block content %}
+<div class="row">
+    <!-- 统计卡片 -->
+    <div class="col-md-3 mb-4">
+        <div class="card border-left-primary shadow h-100 py-2">
+            <div class="card-body">
+                <div class="row no-gutters align-items-center">
+                    <div class="col mr-2">
+                        <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
+                            产品总数
+                        </div>
+                        <div class="h5 mb-0 font-weight-bold text-gray-800" id="product-count">0</div>
+                    </div>
+                    <div class="col-auto">
+                        <i class="fa fa-shopping-bag fa-2x text-gray-300"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-3 mb-4">
+        <div class="card border-left-success shadow h-100 py-2">
+            <div class="card-body">
+                <div class="row no-gutters align-items-center">
+                    <div class="col mr-2">
+                        <div class="text-xs font-weight-bold text-success text-uppercase mb-1">
+                            今日订单
+                        </div>
+                        <div class="h5 mb-0 font-weight-bold text-gray-800" id="today-order-count">0</div>
+                    </div>
+                    <div class="col-auto">
+                        <i class="fa fa-list-alt fa-2x text-gray-300"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-3 mb-4">
+        <div class="card border-left-warning shadow h-100 py-2">
+            <div class="card-body">
+                <div class="row no-gutters align-items-center">
+                    <div class="col mr-2">
+                        <div class="text-xs font-weight-bold text-warning text-uppercase mb-1">
+                            库存总量
+                        </div>
+                        <div class="h5 mb-0 font-weight-bold text-gray-800" id="total-inventory">0</div>
+                    </div>
+                    <div class="col-auto">
+                        <i class="fa fa-cubes fa-2x text-gray-300"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-3 mb-4">
+        <div class="card border-left-info shadow h-100 py-2">
+            <div class="card-body">
+                <div class="row no-gutters align-items-center">
+                    <div class="col mr-2">
+                        <div class="text-xs font-weight-bold text-info text-uppercase mb-1">
+                            同步状态
+                        </div>
+                        <div class="h5 mb-0 font-weight-bold text-gray-800" id="sync-status">未同步</div>
+                    </div>
+                    <div class="col-auto">
+                        <i class="fa fa-refresh fa-2x text-gray-300"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- 最近同步记录 -->
+<div class="row">
+    <div class="col-lg-6 mb-4">
+        <div class="card">
+            <div class="card-header">
+                <h6 class="m-0 font-weight-bold text-primary">最近同步记录</h6>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-bordered" id="sync-log-table">
+                        <thead>
+                            <tr>
+                                <th>类型</th>
+                                <th>状态</th>
+                                <th>时间</th>
+                            </tr>
+                        </thead>
+                        <tbody id="sync-log-body">
+                            <tr>
+                                <td colspan="3" class="text-center">暂无数据</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 最近订单 -->
+    <div class="col-lg-6 mb-4">
+        <div class="card">
+            <div class="card-header">
+                <h6 class="m-0 font-weight-bold text-primary">最近订单</h6>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-bordered" id="recent-orders-table">
+                        <thead>
+                            <tr>
+                                <th>订单号</th>
+                                <th>客户</th>
+                                <th>金额</th>
+                                <th>状态</th>
+                            </tr>
+                        </thead>
+                        <tbody id="recent-orders-body">
+                            <tr>
+                                <td colspan="4" class="text-center">暂无数据</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    // 使用AJAX加载统计数据
+    $(document).ready(function() {
+        // 加载产品数量
+        $.get('/api/v1/products/count/', function(data) {
+            $('#product-count').text(data.count);
+        }).fail(function() {
+            $('#product-count').text('N/A');
+        });
+
+        // 加载今日订单数量
+        $.get('/api/v1/orders/today/count/', function(data) {
+            $('#today-order-count').text(data.count);
+        }).fail(function() {
+            $('#today-order-count').text('N/A');
+        });
+
+        // 加载库存总量
+        $.get('/api/v1/inventory/total/', function(data) {
+            $('#total-inventory').text(data.total);
+        }).fail(function() {
+            $('#total-inventory').text('N/A');
+        });
+
+        // 加载同步状态
+        $.get('/api/v1/status/', function(data) {
+            const status = data.api_connections.gerpgo_api;
+            if (status === 'ok') {
+                $('#sync-status').text('正常');
+                $('#sync-status').addClass('text-success');
+            } else {
+                $('#sync-status').text('异常');
+                $('#sync-status').addClass('text-danger');
+            }
+        }).fail(function() {
+            $('#sync-status').text('无法连接');
+            $('#sync-status').addClass('text-danger');
+        });
+
+        // 加载最近同步记录
+        $.get('/api/v1/sync/logs/?limit=5', function(data) {
+            const tbody = $('#sync-log-body');
+            tbody.empty();
+            
+            if (data.results && data.results.length > 0) {
+                data.results.forEach(function(log) {
+                    const statusClass = log.status === 'success' ? 'text-success' : 'text-danger';
+                    const statusIcon = log.status === 'success' ? 'fa-check-circle' : 'fa-times-circle';
+                    
+                    tbody.append(`
+                        <tr>
+                            <td>${log.sync_type}</td>
+                            <td class="${statusClass}"><i class="fa ${statusIcon}"></i> ${log.status}</td>
+                            <td>${new Date(log.created_at).toLocaleString()}</td>
+                        </tr>
+                    `);
+                });
+            } else {
+                tbody.append('<tr><td colspan="3" class="text-center">暂无数据</td></tr>');
+            }
+        }).fail(function() {
+            $('#sync-log-body').html('<tr><td colspan="3" class="text-center">加载失败</td></tr>');
+        });
+
+        // 加载最近订单
+        $.get('/api/v1/orders/?limit=5', function(data) {
+            const tbody = $('#recent-orders-body');
+            tbody.empty();
+            
+            if (data.results && data.results.length > 0) {
+                data.results.forEach(function(order) {
+                    let statusClass = 'text-secondary';
+                    let statusText = '未知';
+                    
+                    switch(order.status) {
+                        case 'pending':
+                            statusClass = 'text-warning';
+                            statusText = '待处理';
+                            break;
+                        case 'processing':
+                            statusClass = 'text-info';
+                            statusText = '处理中';
+                            break;
+                        case 'shipped':
+                            statusClass = 'text-primary';
+                            statusText = '已发货';
+                            break;
+                        case 'delivered':
+                            statusClass = 'text-success';
+                            statusText = '已送达';
+                            break;
+                        case 'canceled':
+                            statusClass = 'text-danger';
+                            statusText = '已取消';
+                            break;
+                    }
+                    
+                    tbody.append(`
+                        <tr>
+                            <td>${order.order_number}</td>
+                            <td>${order.customer_name || '匿名客户'}</td>
+                            <td>¥${order.total_amount}</td>
+                            <td class="${statusClass}">${statusText}</td>
+                        </tr>
+                    `);
+                });
+            } else {
+                tbody.append('<tr><td colspan="4" class="text-center">暂无数据</td></tr>');
+            }
+        }).fail(function() {
+            $('#recent-orders-body').html('<tr><td colspan="4" class="text-center">加载失败</td></tr>');
+        });
+    });
+</script>
+{% endblock %}

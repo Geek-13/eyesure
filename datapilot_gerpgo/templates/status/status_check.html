@@ -1,0 +1,341 @@
+{% extends 'base/base.html' %}
+
+{% block title %}系统状态检查{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="card">
+        <div class="card-header bg-white">
+            <h1 class="h3 mb-0">系统状态检查</h1>
+        </div>
+        <div class="card-body">
+            <!-- 状态检查按钮 -->
+            <div class="mb-4">
+                <button id="check-status-btn" class="btn btn-primary">
+                    <i class="fas fa-check-circle mr-1"></i> 运行状态检查
+                </button>
+            </div>
+            
+            <!-- 系统状态概览 -->
+            <div class="mb-4">
+                <h2 class="h4 mb-3">系统状态概览</h2>
+                <div class="row">
+                    <div class="col-md-3 mb-4">
+                        <div class="card shadow h-100 py-2" id="database-status-card">
+                            <div class="card-body">
+                                <div class="row no-gutters align-items-center">
+                                    <div class="col mr-2">
+                                        <div class="text-xs font-weight-bold text-gray-500 text-uppercase mb-1">
+                                            数据库连接
+                                        </div>
+                                        <div class="h5 mb-0 font-weight-bold text-gray-800" id="database-status">
+                                            未检查
+                                        </div>
+                                    </div>
+                                    <div class="col-auto">
+                                        <i class="fa fa-database fa-2x text-gray-300"></i>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-md-3 mb-4">
+                        <div class="card shadow h-100 py-2" id="api-status-card">
+                            <div class="card-body">
+                                <div class="row no-gutters align-items-center">
+                                    <div class="col mr-2">
+                                        <div class="text-xs font-weight-bold text-gray-500 text-uppercase mb-1">
+                                            API服务
+                                        </div>
+                                        <div class="h5 mb-0 font-weight-bold text-gray-800" id="api-status">
+                                            未检查
+                                        </div>
+                                    </div>
+                                    <div class="col-auto">
+                                        <i class="fa fa-server fa-2x text-gray-300"></i>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-md-3 mb-4">
+                        <div class="card shadow h-100 py-2" id="sync-service-status-card">
+                            <div class="card-body">
+                                <div class="row no-gutters align-items-center">
+                                    <div class="col mr-2">
+                                        <div class="text-xs font-weight-bold text-gray-500 text-uppercase mb-1">
+                                            同步服务
+                                        </div>
+                                        <div class="h5 mb-0 font-weight-bold text-gray-800" id="sync-service-status">
+                                            未检查
+                                        </div>
+                                    </div>
+                                    <div class="col-auto">
+                                        <i class="fa fa-sync-alt fa-2x text-gray-300"></i>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-md-3 mb-4">
+                        <div class="card shadow h-100 py-2" id="overall-status-card">
+                            <div class="card-body">
+                                <div class="row no-gutters align-items-center">
+                                    <div class="col mr-2">
+                                        <div class="text-xs font-weight-bold text-gray-500 text-uppercase mb-1">
+                                            整体状态
+                                        </div>
+                                        <div class="h5 mb-0 font-weight-bold text-gray-800" id="overall-status">
+                                            未检查
+                                        </div>
+                                    </div>
+                                    <div class="col-auto">
+                                        <i class="fa fa-heartbeat fa-2x text-gray-300"></i>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- 详细状态信息 -->
+            <div class="mb-4">
+                <h2 class="h4 mb-3">详细状态信息</h2>
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead>
+                            <tr>
+                                <th>组件名称</th>
+                                <th>状态</th>
+                                <th>响应时间</th>
+                                <th>版本</th>
+                                <th>详细信息</th>
+                            </tr>
+                        </thead>
+                        <tbody id="status-details">
+                            <!-- 详细状态信息将通过AJAX动态加载 -->
+                            <tr>
+                                <td colspan="5" class="text-center">请点击运行状态检查按钮</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            
+            <!-- 系统信息 -->
+            <div>
+                <h2 class="h4 mb-3">系统信息</h2>
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="card shadow mb-4">
+                            <div class="card-header">
+                                <h6 class="m-0 font-weight-bold text-primary">服务器信息</h6>
+                            </div>
+                            <div class="card-body">
+                                <ul class="list-unstyled" id="server-info">
+                                    <li>正在加载...</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="card shadow mb-4">
+                            <div class="card-header">
+                                <h6 class="m-0 font-weight-bold text-primary">应用信息</h6>
+                            </div>
+                            <div class="card-body">
+                                <ul class="list-unstyled" id="app-info">
+                                    <li>正在加载...</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+$(document).ready(function() {
+    // 加载系统信息
+    loadSystemInfo();
+    
+    // 状态检查按钮点击事件
+    $('#check-status-btn').click(function() {
+        runStatusCheck();
+    });
+});
+
+function runStatusCheck() {
+    // 显示加载状态
+    $('#check-status-btn').prop('disabled', true).text('检查中...');
+    $('#status-details').html('<tr><td colspan="5" class="text-center">检查中...</td></tr>');
+    
+    $.ajax({
+        url: '/api/v1/status/check/',
+        type: 'GET',
+        success: function(response) {
+            updateStatusDisplay(response);
+        },
+        error: function(xhr) {
+            console.error('状态检查失败:', xhr);
+            alert('状态检查失败: ' + (xhr.responseJSON?.error || '未知错误'));
+        },
+        complete: function() {
+            // 恢复按钮状态
+            $('#check-status-btn').prop('disabled', false).text('运行状态检查');
+        }
+    });
+}
+
+function updateStatusDisplay(data) {
+    // 更新系统状态概览
+    updateComponentStatus('database-status', data.database.connected);
+    updateComponentStatus('api-status', data.api.healthy);
+    updateComponentStatus('sync-service-status', data.sync_service.healthy);
+    
+    // 计算整体状态
+    const overallHealthy = data.database.connected && data.api.healthy && data.sync_service.healthy;
+    updateComponentStatus('overall-status', overallHealthy);
+    
+    // 更新详细状态信息
+    renderStatusDetails(data);
+}
+
+function updateComponentStatus(elementId, isHealthy) {
+    const element = $('#' + elementId);
+    const cardElement = element.closest('.card');
+    const iconElement = cardElement.find('i');
+    
+    if (isHealthy) {
+        element.text('正常').removeClass('text-danger').addClass('text-success');
+        cardElement.removeClass('border-danger bg-danger bg-opacity-5').addClass('border-success bg-success bg-opacity-5');
+        iconElement.removeClass('text-danger').addClass('text-success');
+    } else {
+        element.text('异常').removeClass('text-success').addClass('text-danger');
+        cardElement.removeClass('border-success bg-success bg-opacity-5').addClass('border-danger bg-danger bg-opacity-5');
+        iconElement.removeClass('text-success').addClass('text-danger');
+    }
+}
+
+function renderStatusDetails(data) {
+    const statusDetails = $('#status-details');
+    statusDetails.empty();
+    
+    // 数据库状态
+    const dbRow = `
+        <tr>
+            <td>数据库</td>
+            <td>
+                <span class="badge badge-${data.database.connected ? 'success' : 'danger'}">
+                    ${data.database.connected ? '正常' : '异常'}
+                </span>
+            </td>
+            <td>${data.database.response_time}ms</td>
+            <td>${data.database.version || '-'}</td>
+            <td>${data.database.details || '-'}</td>
+        </tr>
+    `;
+    statusDetails.append(dbRow);
+    
+    // API服务状态
+    const apiRow = `
+        <tr>
+            <td>API服务</td>
+            <td>
+                <span class="badge badge-${data.api.healthy ? 'success' : 'danger'}">
+                    ${data.api.healthy ? '正常' : '异常'}
+                </span>
+            </td>
+            <td>${data.api.response_time}ms</td>
+            <td>${data.api.version || '-'}</td>
+            <td>${data.api.details || '-'}</td>
+        </tr>
+    `;
+    statusDetails.append(apiRow);
+    
+    // 同步服务状态
+    const syncRow = `
+        <tr>
+            <td>同步服务</td>
+            <td>
+                <span class="badge badge-${data.sync_service.healthy ? 'success' : 'danger'}">
+                    ${data.sync_service.healthy ? '正常' : '异常'}
+                </span>
+            </td>
+            <td>${data.sync_service.response_time}ms</td>
+            <td>${data.sync_service.version || '-'}</td>
+            <td>${data.sync_service.details || '-'}</td>
+        </tr>
+    `;
+    statusDetails.append(syncRow);
+    
+    // 其他组件状态（如果有）
+    if (data.other_components && data.other_components.length > 0) {
+        data.other_components.forEach(function(component) {
+            const componentRow = `
+                <tr>
+                    <td>${component.name}</td>
+                    <td>
+                        <span class="badge badge-${component.healthy ? 'success' : 'danger'}">
+                            ${component.healthy ? '正常' : '异常'}
+                        </span>
+                    </td>
+                    <td>${component.response_time}ms</td>
+                    <td>${component.version || '-'}</td>
+                    <td>${component.details || '-'}</td>
+                </tr>
+            `;
+            statusDetails.append(componentRow);
+        });
+    }
+}
+
+function loadSystemInfo() {
+    $.ajax({
+        url: '/api/v1/status/system-info/',
+        type: 'GET',
+        success: function(response) {
+            // 更新服务器信息
+            const serverInfo = $('#server-info');
+            serverInfo.empty();
+            if (response.server) {
+                Object.keys(response.server).forEach(function(key) {
+                    serverInfo.append(`<li><strong>${formatKeyName(key)}:</strong> ${response.server[key]}</li>`);
+                });
+            } else {
+                serverInfo.append('<li>无法获取服务器信息</li>');
+            }
+            
+            // 更新应用信息
+            const appInfo = $('#app-info');
+            appInfo.empty();
+            if (response.app) {
+                Object.keys(response.app).forEach(function(key) {
+                    appInfo.append(`<li><strong>${formatKeyName(key)}:</strong> ${response.app[key]}</li>`);
+                });
+            } else {
+                appInfo.append('<li>无法获取应用信息</li>');
+            }
+        },
+        error: function(xhr) {
+            console.error('加载系统信息失败:', xhr);
+            $('#server-info').html('<li>加载服务器信息失败</li>');
+            $('#app-info').html('<li>加载应用信息失败</li>');
+        }
+    });
+}
+
+function formatKeyName(key) {
+    // 将键名格式化为更易读的形式
+    return key.split('_')
+        .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+        .join(' ');
+}
+</script>
+{% endblock %}

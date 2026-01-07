@@ -1,0 +1,111 @@
+{% extends 'base.html' %}
+
+{% block title %}广告活动 - 亚马逊广告数据分析平台{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-lg-12">
+        <div class="card">
+            <div class="card-header">
+                <div class="row">
+                    <div class="col-md-6">
+                        <h4 class="card-title">亚马逊广告活动</h4>
+                    </div>
+                    <div class="col-md-6">
+                        <form id="refreshCampaignsForm" method="POST" class="float-end">
+                            {% csrf_token %}
+                            <div class="input-group">
+                                <select name="profile_id" class="form-select" required>
+                                    <option value="">选择配置文件</option>
+                                    {% for profile in profiles %}
+                                    <option value="{{ profile.profile_id }}">{{ profile.profile_name }}</option>
+                                    {% endfor %}
+                                </select>
+                                <button type="submit" class="btn btn-primary ml-2"><i class="fa fa-refresh"></i> 刷新活动</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+            <div class="card-body">
+                <table class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th>活动ID</th>
+                            <th>活动名称</th>
+                            <th>活动类型</th>
+                            <th>状态</th>
+                            <th>预算</th>
+                            <th>开始日期</th>
+                            <th>结束日期</th>
+                            <th>更新时间</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for campaign in campaigns %}
+                        <tr>
+                            <td>{{ campaign.campaign_id }}</td>
+                            <td>{{ campaign.campaign_name }}</td>
+                            <td>{{ campaign.campaign_type }}</td>
+                            <td>
+                                <span class="badge {% if campaign.state == 'enabled' %}bg-success{% elif campaign.state == 'paused' %}bg-warning{% else %}bg-secondary{% endif %}">
+                                    {{ campaign.state }}
+                                </span>
+                            </td>
+                            <td>${{ campaign.budget }}</td>
+                            <td>{{ campaign.start_date|date:"Y-m-d" }}</td>
+                            <td>{{ campaign.end_date|date:"Y-m-d" }}</td>
+                            <td>{{ campaign.updated_at|date:"Y-m-d H:i" }}</td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="8" class="text-center">暂无活动数据</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    document.getElementById('refreshCampaignsForm').addEventListener('submit', function(e) {
+        e.preventDefault();
+        
+        const form = this;
+        const submitBtn = form.querySelector('button[type="submit"]');
+        
+        // 显示加载状态
+        submitBtn.innerHTML = '<i class="fa fa-spinner fa-spin"></i> 刷新中...';
+        submitBtn.disabled = true;
+        
+        // 发送POST请求刷新活动
+        fetch(form.action, {
+            method: 'POST',
+            body: new FormData(form)
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.status === 'success') {
+                alert('活动数据刷新成功！');
+                // 刷新页面
+                window.location.reload();
+            } else {
+                alert('活动数据刷新失败：' + data.message);
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('活动数据刷新失败，网络错误！');
+        })
+        .finally(() => {
+            // 恢复按钮状态
+            submitBtn.innerHTML = '<i class="fa fa-refresh"></i> 刷新活动';
+            submitBtn.disabled = false;
+        });
+    });
+</script>
+{% endblock %}
