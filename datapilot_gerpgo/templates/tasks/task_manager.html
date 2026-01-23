@@ -121,8 +121,8 @@
                         <div class="mb-2">
                             <label class="form-label">相对时间选择（可选）</label>
                             <div class="btn-group btn-group-sm" role="group" aria-label="相对时间选项">
-                                <button type="button" class="btn btn-outline-primary" onclick="setRelativeTime(1)">近1天</button>
                                 <button type="button" class="btn btn-outline-primary" onclick="setRelativeTime(7)">近7天</button>
+                                <button type="button" class="btn btn-outline-primary" onclick="setRelativeTime(14)">近14天</button>
                                 <button type="button" class="btn btn-outline-primary" onclick="setRelativeTime(30)">近30天</button>
                                 <button type="button" class="btn btn-outline-primary" onclick="setRelativeTime(90)">近90天</button>
                                 <button type="button" class="btn btn-outline-primary" onclick="setRelativeTime(180)">近半年</button>
@@ -771,19 +771,6 @@
     
     // 设置相对时间参数
     function setRelativeTime(days) {
-        // 获取当前日期和指定天数前的日期
-        const endDate = new Date();
-        const startDate = new Date();
-        startDate.setDate(startDate.getDate() - days);
-        
-        // 格式化日期为YYYY-MM-DD
-        const formatDate = (date) => {
-            const year = date.getFullYear();
-            const month = String(date.getMonth() + 1).padStart(2, '0');
-            const day = String(date.getDate()).padStart(2, '0');
-            return `${year}-${month}-${day}`;
-        };
-        
         const paramsTextarea = document.getElementById('taskParams');
         let params = {};
         
@@ -801,14 +788,19 @@
             }
         }
         
-        // 添加或更新日期范围参数
-        params.startDate = formatDate(startDate);
-        params.endDate = formatDate(endDate);
+        // 添加或更新相对天数参数
+        params.relative_days = days;
+        
+        // 移除可能存在的具体日期参数
+        delete params.startDate;
+        delete params.endDate;
+        delete params.start_date;
+        delete params.end_date;
         
         // 格式化JSON字符串为紧凑格式，避免缩进导致的问题
         paramsTextarea.value = JSON.stringify(params);
         
-        showToast(`已设置时间范围为近${days}天`, 'success');
+        showToast(`已设置相对时间为近${days}天`, 'success');
     }
     
     // 显示提示消息

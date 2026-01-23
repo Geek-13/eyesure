@@ -1270,9 +1270,9 @@ def sync_sp_ad_data_from_gerpgo(request):
             logger.error(f"从数据库获取市场ID失败: {str(e)}")
             raise ValueError("无法获取市场ID列表，请先同步店铺信息")
     count = data.get('count', 100)
-    # 如果没有提供日期范围，使用默认值（最近7天）
-    start_date = data.get('startDataDate')
-    end_date = data.get('endDataDate')
+    # 获取日期参数，同时支持两种命名方式
+    start_date = data.get('start_date') or data.get('startDataDate')
+    end_date = data.get('end_date') or data.get('endDataDate')
     
     # 如果没有提供日期范围，设置默认值为最近7天
     if not start_date or not end_date:
@@ -1622,9 +1622,10 @@ def sync_sp_kw_data_from_gerpgo(request):
             logger.error(f"从数据库获取市场ID失败: {str(e)}")
             raise ValueError("无法获取市场ID列表，请先同步店铺信息")
     count = data.get('count', 100)
-    start_date = data.get('startDataDate')
-    end_date = data.get('endDataDate')
-
+    # 获取日期参数，同时支持两种命名方式
+    start_date = data.get('start_date') or data.get('startDataDate')
+    end_date = data.get('end_date') or data.get('endDataDate')
+    
     # 如果没有日期参数，默认使用近7天
     if not start_date and not end_date:
         end_date = datetime.now()
@@ -1956,8 +1957,9 @@ def sync_sp_target_data_from_gerpgo(request):
             logger.error(f"从数据库获取市场ID失败: {str(e)}")
             raise ValueError("无法获取市场ID列表，请先同步店铺信息")
     count = data.get('count', 100)
-    start_date = data.get('startDataDate')
-    end_date = data.get('endDataDate')
+    # 获取日期参数，同时支持两种命名方式
+    start_date = data.get('start_date') or data.get('startDataDate')
+    end_date = data.get('end_date') or data.get('endDataDate')
     
     # 如果没有日期参数，默认使用近7天
     if not start_date and not end_date:
@@ -2303,8 +2305,9 @@ def sync_sp_placement_data_from_gerpgo(request):
             logger.error(f"从数据库获取市场ID失败: {str(e)}")
             raise ValueError("无法获取市场ID列表，请先同步店铺信息")
     count = data.get('count', 100)
-    start_date = data.get('startDataDate')
-    end_date = data.get('endDataDate')
+    # 获取日期参数，同时支持两种命名方式
+    start_date = data.get('start_date') or data.get('startDataDate')
+    end_date = data.get('end_date') or data.get('endDataDate')
     
     # 如果没有日期参数，默认使用近7天
     if not start_date and not end_date:
@@ -6715,10 +6718,20 @@ def sync_profit_analysis(request):# request代表POST请求体
         # 获取分页参数
         page = serializer.validated_data.get('page', 1) # validated_data代表请求参数，get方法获取page参数，默认值为1
         pagesize = serializer.validated_data.get('pageSize', 100)
-        # 获取日期参数
+        # 获取日期参数，同时支持两种命名方式
         beginDate = serializer.validated_data.get('beginDate')
         endDate = serializer.validated_data.get('endDate')
-
+        
+        # 同时检查下划线命名方式
+        start_date = serializer.validated_data.get('start_date')
+        end_date = serializer.validated_data.get('end_date')
+        
+        # 优先使用start_date和end_date，如果存在的话
+        if start_date and end_date:
+            beginDate = start_date
+            endDate = end_date
+            logger.info(f"使用下划线命名方式的日期范围：{beginDate} - {endDate}")
+        
         # 如果缺乏日期参数使用近7天
         if not beginDate or not endDate:
             endDate = datetime.now().date()

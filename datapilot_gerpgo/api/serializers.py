@@ -42,8 +42,15 @@ class SyncLogSerializer(serializers.ModelSerializer):
 
 class SyncRequestSerializer(serializers.Serializer):
     """同步请求序列化器"""
-    start_date = serializers.DateTimeField(required=False)
-    end_date = serializers.DateTimeField(required=False)
+    # 驼峰命名方式（beginDate, endDate）
+    beginDate = serializers.DateTimeField(required=False)
+    endDate = serializers.DateTimeField(required=False)
+    forceFullSync = serializers.BooleanField(default=False, required=False) # 是否强制全量同步
+    pageSize = serializers.IntegerField(default=100, min_value=1, max_value=1000, required=False, source='page_size') # 分页大小
+    
+    # 下划线命名方式（start_date, end_date）
+    start_date = serializers.DateTimeField(required=False, source='beginDate')
+    end_date = serializers.DateTimeField(required=False, source='endDate')
     force_full_sync = serializers.BooleanField(default=False) # 是否强制全量同步
     page = serializers.IntegerField(default=1, min_value=1) # 分页页码
     page_size = serializers.IntegerField(default=100, min_value=1, max_value=1000) # 分页大小
@@ -95,7 +102,7 @@ class SPADDataRequestSerializer(serializers.Serializer):
     marketIds = serializers.ListField(
         child=serializers.IntegerField(min_value=1),
         required=False,
-        help_text="市场ID列表"
+        help_text="市场ID列表（驼峰命名）"
     )
     count = serializers.IntegerField(
         default=100,
@@ -106,11 +113,28 @@ class SPADDataRequestSerializer(serializers.Serializer):
     )
     startDataDate = serializers.DateField(
         required=False,
-        help_text="开始日期"
+        help_text="开始日期（驼峰命名）"
     )
     endDataDate = serializers.DateField(
         required=False,
-        help_text="结束日期"
+        help_text="结束日期（驼峰命名）"
+    )
+    # 下划线命名方式支持
+    market_ids = serializers.ListField(
+        child=serializers.IntegerField(min_value=1),
+        required=False,
+        source='marketIds',
+        help_text="市场ID列表（下划线命名）"
+    )
+    start_data_date = serializers.DateField(
+        required=False,
+        source='startDataDate',
+        help_text="开始日期（下划线命名）"
+    )
+    end_data_date = serializers.DateField(
+        required=False,
+        source='endDataDate',
+        help_text="结束日期（下划线命名）"
     )
 
 
@@ -120,7 +144,7 @@ class SPKWDataRequestSerializer(serializers.Serializer):
     marketIds = serializers.ListField(
         child=serializers.IntegerField(min_value=1),
         required=False,
-        help_text="市场ID列表"
+        help_text="市场ID列表（驼峰命名）"
     )
     count = serializers.IntegerField(
         default=100,
@@ -131,11 +155,28 @@ class SPKWDataRequestSerializer(serializers.Serializer):
     )
     startDataDate = serializers.DateField(
         required=False,
-        help_text="开始日期"
+        help_text="开始日期（驼峰命名）"
     )
     endDataDate = serializers.DateField(
         required=False,
-        help_text="结束日期"
+        help_text="结束日期（驼峰命名）"
+    )
+    # 下划线命名方式支持
+    market_ids = serializers.ListField(
+        child=serializers.IntegerField(min_value=1),
+        required=False,
+        source='marketIds',
+        help_text="市场ID列表（下划线命名）"
+    )
+    start_data_date = serializers.DateField(
+        required=False,
+        source='startDataDate',
+        help_text="开始日期（下划线命名）"
+    )
+    end_data_date = serializers.DateField(
+        required=False,
+        source='endDataDate',
+        help_text="结束日期（下划线命名）"
     )
 
 
@@ -165,7 +206,7 @@ class SBKWDataRequestSerializer(serializers.Serializer):
     marketIds = serializers.ListField(
         child=serializers.IntegerField(min_value=1),
         required=False,
-        help_text="市场ID列表"
+        help_text="市场ID列表（驼峰命名）"
     )
     count = serializers.IntegerField(
         default=100,
@@ -176,11 +217,28 @@ class SBKWDataRequestSerializer(serializers.Serializer):
     )
     startDataDate = serializers.DateField(
         required=False,
-        help_text="开始日期"
+        help_text="开始日期（驼峰命名）"
     )
     endDataDate = serializers.DateField(
         required=False,
-        help_text="结束日期"
+        help_text="结束日期（驼峰命名）"
+    )
+    # 下划线命名方式支持
+    market_ids = serializers.ListField(
+        child=serializers.IntegerField(min_value=1),
+        required=False,
+        source='marketIds',
+        help_text="市场ID列表（下划线命名）"
+    )
+    start_data_date = serializers.DateField(
+        required=False,
+        source='startDataDate',
+        help_text="开始日期（下划线命名）"
+    )
+    end_data_date = serializers.DateField(
+        required=False,
+        source='endDataDate',
+        help_text="结束日期（下划线命名）"
     )
 
 # 添加SB广告关键词数据模型序列化器
@@ -205,10 +263,27 @@ class AdsSbKeywordSerializer(serializers.ModelSerializer):
 
 class SBCampainDataRequestSerializer(serializers.Serializer):
     """SBCampain数据同步请求序列化器"""
-    marketIds = serializers.ListField(child=serializers.IntegerField(), required=False)
+    marketIds = serializers.ListField(child=serializers.IntegerField(), required=False, help_text="市场ID列表（驼峰命名）")
     count = serializers.IntegerField(required=False, min_value=1, max_value=100, default=100)
-    startDataDate = serializers.DateField(required=False)
-    endDataDate = serializers.DateField(required=False)
+    startDataDate = serializers.DateField(required=False, help_text="开始日期（驼峰命名）")
+    endDataDate = serializers.DateField(required=False, help_text="结束日期（驼峰命名）")
+    # 下划线命名方式支持
+    market_ids = serializers.ListField(
+        child=serializers.IntegerField(min_value=1),
+        required=False,
+        source='marketIds',
+        help_text="市场ID列表（下划线命名）"
+    )
+    start_data_date = serializers.DateField(
+        required=False,
+        source='startDataDate',
+        help_text="开始日期（下划线命名）"
+    )
+    end_data_date = serializers.DateField(
+        required=False,
+        source='endDataDate',
+        help_text="结束日期（下划线命名）"
+    )
 
 
 class AdsSbCampaignSerializer(serializers.ModelSerializer):
@@ -224,7 +299,7 @@ class SBCreativeDataRequestSerializer(serializers.Serializer):
     marketIds = serializers.ListField(
         child=serializers.IntegerField(min_value=1),
         required=False,
-        help_text="市场ID列表"
+        help_text="市场ID列表（驼峰命名）"
     )
     count = serializers.IntegerField(
         default=100,
@@ -235,11 +310,28 @@ class SBCreativeDataRequestSerializer(serializers.Serializer):
     )
     startDataDate = serializers.DateField(
         required=False,
-        help_text="开始日期"
+        help_text="开始日期（驼峰命名）"
     )
     endDataDate = serializers.DateField(
         required=False,
-        help_text="结束日期"
+        help_text="结束日期（驼峰命名）"
+    )
+    # 下划线命名方式支持
+    market_ids = serializers.ListField(
+        child=serializers.IntegerField(min_value=1),
+        required=False,
+        source='marketIds',
+        help_text="市场ID列表（下划线命名）"
+    )
+    start_data_date = serializers.DateField(
+        required=False,
+        source='startDataDate',
+        help_text="开始日期（下划线命名）"
+    )
+    end_data_date = serializers.DateField(
+        required=False,
+        source='endDataDate',
+        help_text="结束日期（下划线命名）"
     )
 
 
@@ -270,7 +362,7 @@ class SPTargetDataRequestSerializer(serializers.Serializer):
     marketIds = serializers.ListField(
         child=serializers.IntegerField(min_value=1),
         required=False,
-        help_text="市场ID列表"
+        help_text="市场ID列表（驼峰命名）"
     )
     count = serializers.IntegerField(
         default=100,
@@ -281,11 +373,28 @@ class SPTargetDataRequestSerializer(serializers.Serializer):
     )
     startDataDate = serializers.DateField(
         required=False,
-        help_text="开始日期"
+        help_text="开始日期（驼峰命名）"
     )
     endDataDate = serializers.DateField(
         required=False,
-        help_text="结束日期"
+        help_text="结束日期（驼峰命名）"
+    )
+    # 下划线命名方式支持
+    market_ids = serializers.ListField(
+        child=serializers.IntegerField(min_value=1),
+        required=False,
+        source='marketIds',
+        help_text="市场ID列表（下划线命名）"
+    )
+    start_data_date = serializers.DateField(
+        required=False,
+        source='startDataDate',
+        help_text="开始日期（下划线命名）"
+    )
+    end_data_date = serializers.DateField(
+        required=False,
+        source='endDataDate',
+        help_text="结束日期（下划线命名）"
     )
 
 # 在SPTargetDataRequestSerializer后添加以下代码
@@ -294,7 +403,7 @@ class SPPlacementDataRequestSerializer(serializers.Serializer):
     marketIds = serializers.ListField(
         child=serializers.IntegerField(min_value=1),
         required=False,
-        help_text="市场ID列表"
+        help_text="市场ID列表（驼峰命名）"
     )
     count = serializers.IntegerField(
         default=100,
@@ -305,11 +414,28 @@ class SPPlacementDataRequestSerializer(serializers.Serializer):
     )
     startDataDate = serializers.DateField(
         required=False,
-        help_text="开始日期"
+        help_text="开始日期（驼峰命名）"
     )
     endDataDate = serializers.DateField(
         required=False,
-        help_text="结束日期"
+        help_text="结束日期（驼峰命名）"
+    )
+    # 下划线命名方式支持
+    market_ids = serializers.ListField(
+        child=serializers.IntegerField(min_value=1),
+        required=False,
+        source='marketIds',
+        help_text="市场ID列表（下划线命名）"
+    )
+    start_data_date = serializers.DateField(
+        required=False,
+        source='startDataDate',
+        help_text="开始日期（下划线命名）"
+    )
+    end_data_date = serializers.DateField(
+        required=False,
+        source='endDataDate',
+        help_text="结束日期（下划线命名）"
     )
 
 # 同时添加对应的模型序列化器
@@ -358,7 +484,7 @@ class SPSearchTermsDataRequestSerializer(serializers.Serializer):
     marketIds = serializers.ListField(
         child=serializers.IntegerField(min_value=1),
         required=False,
-        help_text="市场ID列表"
+        help_text="市场ID列表（驼峰命名）"
     )
     count = serializers.IntegerField(
         default=100,
@@ -369,11 +495,28 @@ class SPSearchTermsDataRequestSerializer(serializers.Serializer):
     )
     startDataDate = serializers.DateField(
         required=False,
-        help_text="开始日期"
+        help_text="开始日期（驼峰命名）"
     )
     endDataDate = serializers.DateField(
         required=False,
-        help_text="结束日期"
+        help_text="结束日期（驼峰命名）"
+    )
+    # 下划线命名方式支持
+    market_ids = serializers.ListField(
+        child=serializers.IntegerField(min_value=1),
+        required=False,
+        source='marketIds',
+        help_text="市场ID列表（下划线命名）"
+    )
+    start_data_date = serializers.DateField(
+        required=False,
+        source='startDataDate',
+        help_text="开始日期（下划线命名）"
+    )
+    end_data_date = serializers.DateField(
+        required=False,
+        source='endDataDate',
+        help_text="结束日期（下划线命名）"
     )
 
 # 添加SP搜索词数据模型序列化器
@@ -403,7 +546,7 @@ class SBTargetingDataRequestSerializer(serializers.Serializer):
     marketIds = serializers.ListField(
         child=serializers.IntegerField(min_value=1),
         required=False,
-        help_text="市场ID列表"
+        help_text="市场ID列表（驼峰命名）"
     )
     count = serializers.IntegerField(
         default=100,
@@ -414,11 +557,28 @@ class SBTargetingDataRequestSerializer(serializers.Serializer):
     )
     startDataDate = serializers.DateField(
         required=False,
-        help_text="开始日期"
+        help_text="开始日期（驼峰命名）"
     )
     endDataDate = serializers.DateField(
         required=False,
-        help_text="结束日期"
+        help_text="结束日期（驼峰命名）"
+    )
+    # 下划线命名方式支持
+    market_ids = serializers.ListField(
+        child=serializers.IntegerField(min_value=1),
+        required=False,
+        source='marketIds',
+        help_text="市场ID列表（下划线命名）"
+    )
+    start_data_date = serializers.DateField(
+        required=False,
+        source='startDataDate',
+        help_text="开始日期（下划线命名）"
+    )
+    end_data_date = serializers.DateField(
+        required=False,
+        source='endDataDate',
+        help_text="结束日期（下划线命名）"
     )
 
 # 添加SB目标投放数据模型序列化器
@@ -449,7 +609,7 @@ class SBPlacementDataRequestSerializer(serializers.Serializer):
     marketIds = serializers.ListField(
         child=serializers.IntegerField(min_value=1),
         required=False,
-        help_text="市场ID列表"
+        help_text="市场ID列表（驼峰命名）"
     )
     count = serializers.IntegerField(
         default=100,
@@ -460,11 +620,28 @@ class SBPlacementDataRequestSerializer(serializers.Serializer):
     )
     startDataDate = serializers.DateField(
         required=False,
-        help_text="开始日期"
+        help_text="开始日期（驼峰命名）"
     )
     endDataDate = serializers.DateField(
         required=False,
-        help_text="结束日期"
+        help_text="结束日期（驼峰命名）"
+    )
+    # 下划线命名方式支持
+    market_ids = serializers.ListField(
+        child=serializers.IntegerField(min_value=1),
+        required=False,
+        source='marketIds',
+        help_text="市场ID列表（下划线命名）"
+    )
+    start_data_date = serializers.DateField(
+        required=False,
+        source='startDataDate',
+        help_text="开始日期（下划线命名）"
+    )
+    end_data_date = serializers.DateField(
+        required=False,
+        source='endDataDate',
+        help_text="结束日期（下划线命名）"
     )
 
 class AdsSbPlacementSerializer(serializers.ModelSerializer):
@@ -494,7 +671,7 @@ class SBSearchTermsDataRequestSerializer(serializers.Serializer):
     marketIds = serializers.ListField(
         child=serializers.IntegerField(min_value=1),
         required=False,
-        help_text="市场ID列表"
+        help_text="市场ID列表（驼峰命名）"
     )
     count = serializers.IntegerField(
         default=100,
@@ -505,11 +682,28 @@ class SBSearchTermsDataRequestSerializer(serializers.Serializer):
     )
     startDataDate = serializers.DateField(
         required=False,
-        help_text="开始日期"
+        help_text="开始日期（驼峰命名）"
     )
     endDataDate = serializers.DateField(
         required=False,
-        help_text="结束日期"
+        help_text="结束日期（驼峰命名）"
+    )
+    # 下划线命名方式支持
+    market_ids = serializers.ListField(
+        child=serializers.IntegerField(min_value=1),
+        required=False,
+        source='marketIds',
+        help_text="市场ID列表（下划线命名）"
+    )
+    start_data_date = serializers.DateField(
+        required=False,
+        source='startDataDate',
+        help_text="开始日期（下划线命名）"
+    )
+    end_data_date = serializers.DateField(
+        required=False,
+        source='endDataDate',
+        help_text="结束日期（下划线命名）"
     )
 
 # 添加SB搜索词数据模型序列化器
@@ -559,7 +753,7 @@ class SDSCampaignDataRequestSerializer(serializers.Serializer):
     marketIds = serializers.ListField(
         child=serializers.IntegerField(min_value=1),
         required=False,
-        help_text="市场ID列表"
+        help_text="市场ID列表（驼峰命名）"
     )
     count = serializers.IntegerField(
         default=100,
@@ -570,11 +764,28 @@ class SDSCampaignDataRequestSerializer(serializers.Serializer):
     )
     startDataDate = serializers.DateField(
         required=False,
-        help_text="开始日期"
+        help_text="开始日期（驼峰命名）"
     )
     endDataDate = serializers.DateField(
         required=False,
-        help_text="结束日期"
+        help_text="结束日期（驼峰命名）"
+    )
+    # 下划线命名方式支持
+    market_ids = serializers.ListField(
+        child=serializers.IntegerField(min_value=1),
+        required=False,
+        source='marketIds',
+        help_text="市场ID列表（下划线命名）"
+    )
+    start_data_date = serializers.DateField(
+        required=False,
+        source='startDataDate',
+        help_text="开始日期（下划线命名）"
+    )
+    end_data_date = serializers.DateField(
+        required=False,
+        source='endDataDate',
+        help_text="结束日期（下划线命名）"
     )
 
 
@@ -583,7 +794,7 @@ class SDProductDataRequestSerializer(serializers.Serializer):
     marketIds = serializers.ListField(
         child=serializers.IntegerField(min_value=1),
         required=False,
-        help_text="市场ID列表"
+        help_text="市场ID列表（驼峰命名）"
     )
     count = serializers.IntegerField(
         default=100,
@@ -594,11 +805,28 @@ class SDProductDataRequestSerializer(serializers.Serializer):
     )
     startDataDate = serializers.DateField(
         required=False,
-        help_text="开始日期"
+        help_text="开始日期（驼峰命名）"
     )
     endDataDate = serializers.DateField(
         required=False,
-        help_text="结束日期"
+        help_text="结束日期（驼峰命名）"
+    )
+    # 下划线命名方式支持
+    market_ids = serializers.ListField(
+        child=serializers.IntegerField(min_value=1),
+        required=False,
+        source='marketIds',
+        help_text="市场ID列表（下划线命名）"
+    )
+    start_data_date = serializers.DateField(
+        required=False,
+        source='startDataDate',
+        help_text="开始日期（下划线命名）"
+    )
+    end_data_date = serializers.DateField(
+        required=False,
+        source='endDataDate',
+        help_text="结束日期（下划线命名）"
     )
 
 
@@ -641,11 +869,22 @@ class InventoryStorageLedgerRequestSerializer(serializers.Serializer):
     )
     reportStartDate = serializers.DateField(
         required=False,
-        help_text="开始日期"
+        help_text="开始日期（驼峰命名）"
     )
     reportEndDate = serializers.DateField(
         required=False,
-        help_text="结束日期"
+        help_text="结束日期（驼峰命名）"
+    )
+    # 下划线命名方式支持
+    report_start_date = serializers.DateField(
+        required=False,
+        source='reportStartDate',
+        help_text="开始日期（下划线命名）"
+    )
+    report_end_date = serializers.DateField(
+        required=False,
+        source='reportEndDate',
+        help_text="结束日期（下划线命名）"
     )
 
 # 添加库存分类账数据模型序列化器
@@ -693,11 +932,22 @@ class InventoryStorageLedgerDetailRequestSerializer(serializers.Serializer):
     )
     beginReportDate = serializers.DateField(
         required=False,
-        help_text="开始日期"
+        help_text="开始日期（驼峰命名）"
     )
     endReportDate = serializers.DateField(
         required=False,
-        help_text="结束日期"
+        help_text="结束日期（驼峰命名）"
+    )
+    # 下划线命名方式支持
+    begin_report_date = serializers.DateField(
+        required=False,
+        source='beginReportDate',
+        help_text="开始日期（下划线命名）"
+    )
+    end_report_date = serializers.DateField(
+        required=False,
+        source='endReportDate',
+        help_text="结束日期（下划线命名）"
     )
 
 # 添加库存分类账明细数据模型序列化器
@@ -876,6 +1126,17 @@ class TrafficAnalysisRequestSerializer(serializers.Serializer):
         required=False,  # 改为非必填
         help_text="结束日期（如果不提供，默认为今天）"
     )
+    # 添加对下划线命名方式的支持
+    start_date = serializers.DateField(
+        required=False,
+        source='beginDate',
+        help_text="开始日期（下划线命名方式，与beginDate同义）"
+    )
+    end_date = serializers.DateField(
+        required=False,
+        source='endDate',
+        help_text="结束日期（下划线命名方式，与endDate同义）"
+    )
     page = serializers.IntegerField(
         default=1,
         min_value=1,
@@ -1039,6 +1300,17 @@ class ProfitAnalysisRequestSerializer(serializers.Serializer):
     endDate = serializers.DateField(
         required=False,
         help_text="结束日期"
+    )
+    # 添加对下划线命名方式的支持
+    start_date = serializers.DateField(
+        required=False,
+        source='beginDate',
+        help_text="开始日期（下划线命名方式，与beginDate同义）"
+    )
+    end_date = serializers.DateField(
+        required=False,
+        source='endDate',
+        help_text="结束日期（下划线命名方式，与endDate同义）"
     )
     pageSize = serializers.IntegerField(
         source='pagesize',

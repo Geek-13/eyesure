@@ -78,7 +78,7 @@ def import_function(function_path):
 def task_wrapper(task_id):
     """任务包装器，用于捕获异常并记录执行日志"""
     from django.http import HttpRequest
-    from datetime import timezone
+    from datetime import timezone, timedelta
     
     task = ScheduledTask.objects.get(id=task_id)
     # 使用带时区的datetime
@@ -91,6 +91,34 @@ def task_wrapper(task_id):
         # 导入并执行任务函数
         func = import_function(task.task_function)
         params = task.get_params_dict()
+        
+        # 处理相对时间参数
+        if 'relative_days' in params:
+            logger.info(f"处理相对时间参数: {params['relative_days']}天")
+            relative_days = int(params['relative_days'])
+            end_date = datetime.now().date()
+            start_date = end_date - timedelta(days=relative_days)
+            
+            # 将日期对象转换为字符串格式，以便JSON序列化
+            # 1. 下划线命名方式（start_date, end_date）
+            params['start_date'] = start_date.strftime('%Y-%m-%d')
+            params['end_date'] = end_date.strftime('%Y-%m-%d')
+            
+            # 2. 驼峰命名方式（beginDate, endDate）
+            params['beginDate'] = start_date.strftime('%Y-%m-%d')
+            params['endDate'] = end_date.strftime('%Y-%m-%d')
+            
+            # 3. 针对广告系列数据的特定命名方式（startDataDate, endDataDate）
+            params['startDataDate'] = start_date.strftime('%Y-%m-%d')
+            params['endDataDate'] = end_date.strftime('%Y-%m-%d')
+            
+            # 4. 针对广告系列数据的下划线命名方式（start_data_date, end_data_date）
+            params['start_data_date'] = start_date.strftime('%Y-%m-%d')
+            params['end_data_date'] = end_date.strftime('%Y-%m-%d')
+            
+            logger.info(f"计算出的日期范围: {start_date} 至 {end_date}")
+            # 移除相对时间参数，避免重复处理
+            del params['relative_days']
         
         # 执行任务函数
         # 检查是否为Django视图函数（需要request参数）
@@ -107,8 +135,29 @@ def task_wrapper(task_id):
             request = HttpRequest()
             # 默认为POST请求
             request.method = 'POST'
-            # 设置request.data，包含任务参数
-            request.data = params.copy()
+            # 设置基本属性
+            request.POST = {}
+            request.GET = {}
+            import json
+            import io
+            # 将参数转换为JSON字符串作为请求体
+            request_body = json.dumps(params).encode('utf-8')
+            # 设置请求元数据
+            request.META = {
+                'CONTENT_TYPE': 'application/json',
+                'HTTP_USER_AGENT': 'Scheduler/1.0',
+                'REMOTE_ADDR': '127.0.0.1',
+                'CONTENT_LENGTH': str(len(request_body)),
+            }
+            request.path = '/api/scheduler/task'
+            request.path_info = request.path
+            # 设置请求体和stream属性
+            request._body = request_body
+            # 添加stream属性，返回BytesIO对象
+            request.stream = io.BytesIO(request_body)
+            # 为可能的lower()调用设置默认值
+            if not hasattr(request, 'content_type'):
+                request.content_type = 'application/json'
             # 执行视图函数，不需要额外传递kwargs
             result = view_func(request)
         else:
@@ -126,23 +175,28 @@ def task_wrapper(task_id):
                     request.method = 'POST'
                     request.POST = {}
                     request.GET = {}
+                    import json
+                    import io
+                    # 将参数转换为JSON字符串作为请求体
+                    request_body = json.dumps(params).encode('utf-8')
+                    # 设置请求元数据
                     request.META = {
                         'CONTENT_TYPE': 'application/json',
                         'HTTP_USER_AGENT': 'Scheduler/1.0',
                         'REMOTE_ADDR': '127.0.0.1',
+                        'CONTENT_LENGTH': str(len(request_body)),
                     }
-                    request.headers = {}
                     request.path = '/api/scheduler/task'
                     request.path_info = request.path
+                    # 设置请求体和stream属性
+                    request._body = request_body
+                    # 添加stream属性，返回BytesIO对象
+                    request.stream = io.BytesIO(request_body)
                     # 为可能的lower()调用设置默认值
                     if not hasattr(request, 'content_type'):
                         request.content_type = 'application/json'
                     
-                    # 对于Django REST framework视图，需要设置request.data
-                    # 我们将任务参数设置到request.data中
-                    request.data = params.copy()
-                    
-                    # 不需要将params作为kwargs传递，因为我们已经将其设置到request对象中
+                    # 执行视图函数，传递模拟的request对象
                     result = func(request)
                 else:
                     # 其他类型错误则重新抛出
