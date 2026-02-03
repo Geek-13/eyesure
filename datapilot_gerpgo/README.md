@@ -1,95 +1,302 @@
-# Datapilot
+# datapilot_gerpgo
 
-一个基于 Django 的应用，用于集成 Amazon Advertising API，展示与管理广告配置文件（Profiles）、广告活动（Campaigns）、广告组（AdGroups）、关键词（Keywords）以及报表（Reports）。项目包含基础页面、数据更新接口以及认证、请求和数据处理等工具模块。
+一个基于 Django 和 Gerpgo API 的数据同步与管理系统，用于从 Gerpgo 平台同步各类业务数据到本地数据库，并提供定时任务管理、数据可视化等功能。
 
-## 功能概览
-- 仪表盘首页展示配置文件与近期活动
-- Profiles、Campaigns、AdGroups、Keywords 列表与数据拉取
-- Reports 创建与状态记录
-- 亚马逊广告 API 集成与令牌刷新
-- 开发环境 CORS/DRF 配置与文件/控制台日志
+## 功能特性
+
+- **数据同步**：从 Gerpgo API 同步产品、库存、广告、销售等数据
+- **定时任务**：支持自定义 Cron 表达式的定时任务管理
+- **相对时间选择**：支持按相对天数（如30天）设置同步时间范围
+- **多维度数据**：支持同步产品、FBA库存、广告（SP/SB/SD）、流量分析、利润分析等数据
+- **数据可视化**：提供产品列表、库存列表、数据同步仪表盘等可视化页面
+- **系统状态检查**：提供API状态和系统健康检查功能
+- **RESTful API**：提供完整的 RESTful API 接口
+- **跨域支持**：内置 CORS 配置，支持前端跨域请求
 
 ## 技术栈
-- Python 3.x, Django 5.x
-- Django REST Framework
-- requests
-- django-cors-headers
-- python-dotenv
-- 注意：utils/data_processing.py 中使用了 pandas 与 numpy（见下文依赖提示）
 
-## 目录结构（关键部分）
-- datapilot/ — 项目配置（settings、urls、wsgi）
-- api/ — 业务应用（models、views、urls、services、migrations、templates）
-- utils/ — 工具模块（auth_utils、request_utils、data_processing）
-- templates/ — 页面模板（api/dashboard、profiles、campaigns 等）
-- static/ — 静态资源（css/js）
-- .env — 环境变量（不应提交到版本库）
-- requirements.txt — 依赖列表
+- Python 3.x
+- Django 5.x
+- Django REST Framework
+- PostgreSQL
+- APScheduler（定时任务）
+- requests（HTTP请求）
+- django-cors-headers（跨域支持）
+- python-dotenv（环境变量管理）
+- python-dateutil（日期时间处理）
+- pytz（时区处理）
+
+## 目录结构
+
+```
+datapilot_gerpgo/
+├── api/                    # 业务应用
+│   ├── migrations/         # 数据库迁移文件
+│   ├── services/           # 服务层（API客户端等）
+│   ├── tasks/              # 定时任务相关
+│   ├── tests/              # 测试文件
+│   ├── __init__.py
+│   ├── admin.py            # Django 管理后台
+│   ├── apps.py             # 应用配置
+│   ├── models.py           # 数据模型
+│   ├── serializers.py      # DRF 序列化器
+│   ├── urls.py             # API 路由
+│   ├── views.py            # API 视图
+│   └── views_frontend.py   # 前端页面视图
+├── datapilot_gerpgo/       # 项目配置
+│   ├── __init__.py
+│   ├── asgi.py             # ASGI 配置
+│   ├── settings.py         # Django 设置
+│   ├── urls.py             # 项目路由
+│   └── wsgi.py             # WSGI 配置
+├── templates/              # 页面模板
+│   ├── base/               # 基础模板
+│   ├── inventory/          # 库存相关模板
+│   ├── product/            # 产品相关模板
+│   ├── sales/              # 销售相关模板
+│   ├── status/             # 状态检查模板
+│   ├── sync/               # 同步仪表盘模板
+│   ├── tasks/              # 任务管理模板
+│   └── home.html           # 首页
+├── utils/                  # 工具模块
+│   ├── __init__.py
+│   ├── auth_utils.py       # 认证工具
+│   ├── data_processing.py  # 数据处理工具
+│   └── request_utils.py    # 请求工具
+├── .gitignore              # Git 忽略文件
+├── README.md               # 项目文档
+├── manage.py               # Django 管理脚本
+└── requirements.txt        # 依赖列表
+```
 
 ## 快速开始
 
-1) 创建并激活虚拟环境，安装依赖
-- python -m venv .venv
-- .venv\Scripts\activate  （Windows）
-- pip install -r requirements.txt
+### 1. 环境准备
 
-2) 配置环境变量（项目根目录 .env）
-基本：
-- SECRET_KEY=your_django_secret_key
-- DEBUG=True
-- ALLOWED_HOSTS=127.0.0.1,localhost
+1. **创建虚拟环境**
+   ```bash
+   # Windows
+   python -m venv venv
+   venv\Scripts\activate
+   
+   # Linux/Mac
+   python3 -m venv venv
+   source venv/bin/activate
+   ```
 
-亚马逊广告：
-- AMAZON_CLIENT_ID=your_client_id
-- AMAZON_CLIENT_SECRET=your_client_secret
-- AMAZON_REFRESH_TOKEN=your_refresh_token
-- AMAZON_REGION=na  （或 eu / fe）
-- AMAZON_API_VERSION=v3
+2. **安装依赖**
+   ```bash
+   pip install -r requirements.txt
+   ```
 
-3) 初始化数据库
-- python manage.py migrate
-- 可选：python manage.py createsuperuser
+### 2. 配置环境变量
 
-4) 启动服务
-- python manage.py runserver
+在项目根目录创建 `.env` 文件，添加以下配置：
 
-## 页面与接口
-页面（datapilot/api/urls.py）：
-- / — Dashboard
-- /profiles/ — Profiles
-- /campaigns/ — Campaigns
-- /ad_groups/ — Ad Groups
-- /keywords/ — Keywords
-- /reports/ — Reports
+```env
+# Django 配置
+SECRET_KEY=your_django_secret_key
+DEBUG=True
+ALLOWED_HOSTS=127.0.0.1,localhost
 
-数据更新接口：
-- POST /api/update/
-- 请求体示例：
-  - {"endpoint":"profiles"}
-  - {"endpoint":"campaigns","profile_id":123456789}
-  - {"endpoint":"ad_groups","profile_id":123456789}
-  - {"endpoint":"keywords","profile_id":123456789}
+# Gerpgo API 配置
+GERPGO_APP_ID=your_gerpgo_app_id
+GERPGO_APP_KEY=your_gerpgo_app_key
+GERPGO_API_BASE_URL=https://open.gerpgo.com/api/open/
 
-示例（curl）：
-- curl -X POST http://127.0.0.1:8000/api/update/ -H "Content-Type: application/json" -d "{\"endpoint\":\"profiles\"}"
+# 数据库配置（可选，默认使用 settings.py 中的配置）
+# DB_NAME=gerpgoApi
+# DB_USER=postgres
+# DB_PASSWORD=your_password
+# DB_HOST=localhost
+# DB_PORT=5432
+```
 
-## 日志
-- 默认写入 datapilot.log 并输出到控制台（开发环境 DEBUG 级别）。生产环境建议降低日志级别并采用滚动日志。
+### 3. 数据库配置
 
-## 依赖与注意事项
-- utils/data_processing.py 使用了 pandas 与 numpy。若需运行该模块相关功能，请在 requirements.txt 中补充：
-  - pandas>=2.0.0
-  - numpy>=1.26.0
-- 接口默认在开发环境较为开放；生产环境需开启鉴权（如 DRF Token 或 Session）并限制访问。
+项目默认使用 PostgreSQL 数据库，配置如下：
+
+- 数据库名：`gerpgoApi`
+- 用户名：`postgres`
+- 密码：`eyesure5211..`
+- 主机：`localhost`
+- 端口：`5432`
+
+如果需要修改数据库配置，请编辑 `datapilot_gerpgo/settings.py` 文件中的 `DATABASES` 部分。
+
+### 4. 初始化数据库
+
+```bash
+# 执行数据库迁移
+python manage.py migrate
+
+# 创建超级用户（可选，用于访问 Django 管理后台）
+python manage.py createsuperuser
+```
+
+### 5. 启动服务
+
+```bash
+python manage.py runserver
+```
+
+服务启动后，可以通过以下地址访问：
+- 首页：`http://127.0.0.1:8000/`
+- 定时任务管理：`http://127.0.0.1:8000/tasks/`
+- API 文档：`http://127.0.0.1:8000/api/`
+
+## 使用指南
+
+### 1. 定时任务管理
+
+1. **访问定时任务管理页面**：`http://127.0.0.1:8000/tasks/`
+
+2. **创建定时任务**：
+   - 填写任务名称
+   - 选择任务函数（如 `api.views.sync_products_from_gerpgo`）
+   - 设置 Cron 表达式（如 `0 0 * * *` 表示每天凌晨执行）
+   - 设置任务参数（可选），如 `{"relative_days": 30}` 表示同步最近30天的数据
+   - 选择任务状态为 "ACTIVE"
+   - 点击 "保存" 按钮
+
+3. **管理任务**：
+   - 可以暂停、恢复或删除任务
+   - 可以查看任务执行日志
+
+### 2. 数据同步
+
+1. **手动同步**：
+   - 访问数据同步仪表盘：`http://127.0.0.1:8000/sync/`
+   - 选择需要同步的数据类型
+   - 设置同步参数
+   - 点击 "同步" 按钮
+
+2. **定时同步**：
+   - 通过定时任务管理页面创建定时任务
+   - 设置合适的 Cron 表达式
+   - 配置同步参数
+
+### 3. 相对时间参数使用
+
+在创建定时任务时，可以使用 `relative_days` 参数设置相对时间范围：
+
+```json
+{"relative_days": 30}
+```
+
+这表示同步最近30天的数据，系统会自动计算开始日期和结束日期。
+
+## API 接口
+
+### 核心同步接口
+
+- **同步产品数据**：`POST /api/sync-products/`
+- **同步 FBA 库存**：`POST /api/sync-fba-inventory/`
+- **同步 SP 广告产品**：`POST /api/sync-sp-ad-data/`
+- **同步 SP 广告关键词**：`POST /api/sync-sp-kw-data/`
+- **同步流量分析**：`POST /api/sync-traffic-analysis/`
+- **同步利润分析**：`POST /api/sync-profit-analysis/`
+- **同步汇率数据**：`POST /api/sync-currency-rates/`
+
+### 系统接口
+
+- **API 状态检查**：`GET /api/status/`
+- **定时任务管理**：`GET /api/tasks/`
+- **任务执行日志**：`GET /api/task-execution-logs/`
 
 ## 常见问题
-- 令牌刷新：AmazonAdvertisingAPIService 初始化时会刷新访问令牌；请求前需确保令牌有效。
-- CORS：开发环境可允许全部来源；生产环境请设置白名单。
-- SECRET_KEY：生产环境必须通过 .env 提供，避免使用不安全的默认值。
+
+### 1. 定时任务不执行
+
+- 检查任务状态是否为 "ACTIVE"
+- 检查 Cron 表达式是否正确
+- 检查任务函数路径是否正确
+- 查看任务执行日志获取详细错误信息
+
+### 2. 同步数据时间范围不正确
+
+- 确保使用了正确的时间参数格式
+- 使用 `relative_days` 参数时，确保值为整数
+- 检查 `task_wrapper` 函数是否正确处理了时间参数
+
+### 3. 数据库连接失败
+
+- 确保 PostgreSQL 服务已启动
+- 确保数据库名、用户名、密码配置正确
+- 确保数据库用户有足够的权限
+
+### 4. API 调用失败
+
+- 检查 Gerpgo API 配置是否正确
+- 确保网络连接正常
+- 检查 Gerpgo 平台的 API 权限设置
 
 ## 生产部署建议
-- 使用 PostgreSQL/MySQL 等生产数据库，通过环境变量配置（建议 DATABASE_URL 方案）
-- 将 DEBUG=False 并正确设置 ALLOWED_HOSTS
-- 严格的认证与权限控制（IsAuthenticated、Token/Session）
-- 日志脱敏、滚动与归档
-- 添加单元测试与 CI 流水线（测试、lint、安全检查）
+
+1. **环境配置**：
+   - 设置 `DEBUG=False`
+   - 配置 `ALLOWED_HOSTS` 为实际域名
+   - 使用强密码作为 `SECRET_KEY`
+
+2. **数据库配置**：
+   - 使用生产级 PostgreSQL 配置
+   - 启用数据库连接池
+   - 定期备份数据库
+
+3. **定时任务**：
+   - 使用 Supervisor 或 Systemd 管理定时任务进程
+   - 合理设置任务执行频率，避免 API 调用过于频繁
+
+4. **日志管理**：
+   - 配置详细的日志记录
+   - 使用日志轮转工具管理日志文件
+   - 考虑使用 ELK 等日志分析系统
+
+5. **安全配置**：
+   - 启用 HTTPS
+   - 配置适当的 CORS 策略
+   - 实现 API 访问认证
+
+6. **监控与告警**：
+   - 监控系统运行状态
+   - 设置 API 调用失败告警
+   - 监控定时任务执行情况
+
+## 开发指南
+
+### 代码规范
+
+- 遵循 PEP 8 代码规范
+- 使用中文注释说明复杂逻辑
+- 保持代码结构清晰，模块化设计
+
+### 测试
+
+```bash
+# 运行测试
+python manage.py test
+
+# 运行特定应用的测试
+python manage.py test api
+```
+
+### 代码质量
+
+```bash
+# 安装代码质量工具
+pip install flake8 black
+
+# 检查代码质量
+flake8 .
+
+# 自动格式化代码
+black .
+```
+
+## 许可证
+
+本项目采用 MIT 许可证。
+
+## 联系方式
+
+如有问题或建议，请联系项目维护者。
